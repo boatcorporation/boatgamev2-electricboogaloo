@@ -60,15 +60,11 @@ public class College extends GameActor {
             if (!super.attack(damage)) {
                 collegeBase = new Sprite(collegeBases[0]);
                 this.addAction(new WhiteFlagRoutine());
+                screen.gold += screen.goldPerCollege;
                 isWhiteFlag = true;
             }
             else if (this.getHealth() < (this.getMaxHealth() / 2)) collegeBase = new Sprite(collegeBases[1]);
             else collegeBase = new Sprite(collegeBases[2]);
-        } else if (isWhiteFlag) {
-            isWhiteFlag = false;
-            screen.gold += screen.goldPerCollege;
-            this.clearActions();
-            collegeBase = new Sprite(new Texture(Gdx.files.internal("colleges/college-defeated-0.png")));
         }
         return isActive();
     }
