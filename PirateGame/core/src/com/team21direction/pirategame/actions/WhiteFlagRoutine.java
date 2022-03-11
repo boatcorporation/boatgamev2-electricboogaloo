@@ -27,6 +27,8 @@ public class WhiteFlagRoutine extends Action {
             college.screen.experience += college.screen.experiencePerCollege;
             college.setCollegeName(college.screen.player.parentCollege.getCollegeName());
             college.isWhiteFlag = false;
+            college.collegeBase = new Sprite(new Texture(Gdx.files.internal("colleges/college-defeated-0.png")));
+            college.clearActions();
         }
         return totalAnimationDuration >= 10.0f; // only 'complete' the action when the Ship is killed.
     }
