@@ -1,10 +1,7 @@
 package com.team21direction.pirategame.actions;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.team21direction.pirategame.actors.Cannonball;
-import com.team21direction.pirategame.actors.College;
-import com.team21direction.pirategame.actors.GameActor;
-import com.team21direction.pirategame.actors.Ship;
+import com.team21direction.pirategame.actors.*;
 
 public class CannonballAction extends Action {
     float liveTime = 0.0f;
@@ -22,7 +19,7 @@ public class CannonballAction extends Action {
         float deltaY = (int)(cannonball.direction.y * 5);
         GameActor victim = cannonball.screen.getCollision(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
         // ... remove the College check for Ship collisions...
-        if (victim != null && victim != cannonball.attacker && (victim instanceof College || ((Ship)victim).isPlayer())) {
+        if (victim != null && victim != cannonball.attacker && !(victim instanceof Weather) && (victim instanceof College || ((Ship)victim).isPlayer())) {
             victim.attack(cannonball.getDamage());
             cannonball.live = false;
             actor.remove();
