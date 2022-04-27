@@ -1,5 +1,3 @@
-# Requirements
-
 ## Elicitation
 
 - We began eliciting requirements by reading through the game brief we were given at the beginning of the project looking for any ambiguity, either a feature with generally limited explanation or a feature that’s implementation could change to work best depending on the context surrounding the game. 
