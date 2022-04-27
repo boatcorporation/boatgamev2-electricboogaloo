@@ -5,8 +5,9 @@ import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.screens.MainScreen;
 
 public class GameActor extends Actor {
+    protected double diffMult;
     private boolean isActive = true;
-    private final int maxHealth = 100;
+    private int maxHealth = 100;
     private int health = maxHealth;
     private static int damage = 10;
 
@@ -35,6 +36,11 @@ public class GameActor extends Actor {
      */
     public int getHealth() {
         return health;
+    }
+
+    public void setDifficulty(int maxHealth) {
+        this.maxHealth = maxHealth;
+        this.health = maxHealth;
     }
 
     /**

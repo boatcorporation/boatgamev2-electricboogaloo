@@ -68,7 +68,9 @@ public class MainScreen implements Screen {
 
     private boolean isPlayingMusic = true;
 
-    public MainScreen(PirateGame game) {
+    private double difficultyMultiplier = 1;
+
+    public MainScreen(PirateGame game, String difficulty) {
         this.game = game;
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
@@ -91,14 +93,20 @@ public class MainScreen implements Screen {
 
         cannonballSound = Gdx.audio.newSound(Gdx.files.internal("cannonball.mp3"));
 
+        if (difficulty == "Easy") {
+            difficultyMultiplier = 0.5;
+        } else if (difficulty == "Hard") {
+            difficultyMultiplier = 2;
+        }
+
         stage = new Stage(viewport, batch);
 
 
         colleges = new College[] {
-                new College(this, "Derwent"),
-                new College(this, "Langwith"),
-                new College(this, "Constantine"),
-                new College(this, "Halifax"),
+                new College(this, "Derwent", difficultyMultiplier),
+                new College(this, "Langwith", difficultyMultiplier),
+                new College(this, "Constantine", difficultyMultiplier),
+                new College(this, "Halifax", difficultyMultiplier),
         };
         weathers = new Weather[200];
         for(int i = 0; i < 200; i++) {
@@ -118,14 +126,14 @@ public class MainScreen implements Screen {
 
             stage.addActor(colleges[i]);
             for (int j = 0; j < PirateGame.SHIPS_PER_COLLEGE; j++) {
-                ships[i + j] = new Ship(this, colleges[i]);
+                ships[i + j] = new Ship(this, colleges[i], difficultyMultiplier);
                 do {
                     success = ships[i + j].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
                 } while (!success);
                 stage.addActor(ships[i + j]);
             }
         }
-        player = new Ship(this, new College(this,"Vanbrugh"), true);
+        player = new Ship(this, new College(this,"Vanbrugh", difficultyMultiplier), true, difficultyMultiplier);
         boolean success;
         do {
             success = player.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);

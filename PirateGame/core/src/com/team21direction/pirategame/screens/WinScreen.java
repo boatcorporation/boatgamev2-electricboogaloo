@@ -68,8 +68,7 @@ public class WinScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 WinScreen.this.game.mainScreen.dispose();
-                WinScreen.this.game.mainScreen = new MainScreen(WinScreen.this.game);
-                WinScreen.this.game.setScreen(WinScreen.this.game.mainScreen);
+                WinScreen.this.game.setScreen(WinScreen.this.game.titleScreen);
             }
         });
 

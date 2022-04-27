@@ -10,6 +10,7 @@ import com.team21direction.pirategame.screens.MainScreen;
 import java.util.HashMap;
 
 public class Ship extends GameActor {
+
     public enum Direction{Up, UpLeft, UpRight, Left, Right, Down, DownLeft, DownRight}
     private Direction direction = Direction.Right;
 
@@ -24,10 +25,9 @@ public class Ship extends GameActor {
      * Construct a new Ship which is a member of the supplied parentCollege.
      * @param parentCollege the College which the ship is allied to.
      */
-    public Ship(MainScreen screen, College parentCollege, boolean isPlayer) {
+    public Ship(MainScreen screen, College parentCollege, boolean isPlayer, double diffMult) {
         super(screen);
         this.radius = 150;
-
         this.parentCollege = parentCollege;
         textures = new HashMap<>();
         textures.put(Direction.Up, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-up.png")));
@@ -43,10 +43,16 @@ public class Ship extends GameActor {
 
         this.isPlayer = isPlayer;
         if (!isPlayer) this.addAction(new MoveRandomly());
+        this.diffMult = diffMult;
+        if (!isPlayer) {
+            this.setDifficulty((int) (this.getMaxHealth() * diffMult));
+        } else {
+            this.setDifficulty((int) (this.getMaxHealth() / diffMult));
+        }
     }
 
-    public Ship(MainScreen screen, College parentCollege) {
-        this(screen, parentCollege, false);
+    public Ship(MainScreen screen, College parentCollege, double diffMult) {
+        this(screen, parentCollege, false, diffMult);
     }
 
     /**
