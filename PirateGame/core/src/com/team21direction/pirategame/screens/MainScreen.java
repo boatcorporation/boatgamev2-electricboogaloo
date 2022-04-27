@@ -7,21 +7,21 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
-import com.team21direction.pirategame.actors.Cannonball;
-import com.team21direction.pirategame.actors.College;
-import com.team21direction.pirategame.actors.GameActor;
-import com.team21direction.pirategame.actors.Ship;
+import com.team21direction.pirategame.actors.*;
 
 public class MainScreen implements Screen {
 
@@ -35,9 +35,11 @@ public class MainScreen implements Screen {
     private final BitmapFont font;
     private final Music music;
     private final Sound cannonballSound;
+    private final Texture bg;
 
     private final OrthographicCamera camera;
 
+    private final Weather[] weathers;
     private final College[] colleges;
     private final Ship[] ships;
     public final Ship player;
@@ -77,6 +79,7 @@ public class MainScreen implements Screen {
         camera = new OrthographicCamera();
 
         batch = new SpriteBatch();
+        bg = new Texture(Gdx.files.internal("newmap.png"));
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
@@ -92,12 +95,22 @@ public class MainScreen implements Screen {
 
         stage = new Stage(viewport, batch);
 
+
         colleges = new College[] {
                 new College(this, "Derwent"),
                 new College(this, "Langwith"),
                 new College(this, "Constantine"),
                 new College(this, "Halifax"),
         };
+        weathers = new Weather[200];
+        for(int i = 0; i < 200; i++) {
+            weathers[i] = new Weather(this);
+            boolean success;
+            do {
+                success = weathers[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+            } while (!success);
+            stage.addActor(weathers[i]);
+        }
         ships = new Ship[PirateGame.SHIPS_PER_COLLEGE * colleges.length];
         for (int i = 0; i < colleges.length; i++) {
             boolean success;
@@ -120,6 +133,12 @@ public class MainScreen implements Screen {
             success = player.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
         } while (!success);
         stage.addActor(player);
+        // send clouds to front so they're displayed on top of player
+        for(Actor actor : stage.getActors()) {
+            if (actor instanceof Weather) {
+                actor.toFront();
+            }
+        }
     }
 
     @Override
@@ -133,6 +152,15 @@ public class MainScreen implements Screen {
         timeSinceLastCannon += delta;
         timeSinceLastExpDrop += delta;
         timeSinceLastMusicToggle += delta;
+
+        GameActor collidingWith = getCollision(player.getX(), player.getY());
+        if(collidingWith instanceof Weather) {
+            if(timeSinceLastExpDrop >= 2.0f) {
+                player.attack(1);
+                experience++;
+                timeSinceLastExpDrop = 0.0f;
+            }
+        }
 
         if (timeSinceLastExpDrop >= 10.0f) {
             timeSinceLastExpDrop = 0.0f;
@@ -155,6 +183,7 @@ public class MainScreen implements Screen {
         ScreenUtils.clear(0, 0.6f, 1, 1);
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         stage.act(delta);
+
         stage.draw();
         batch.begin();
         font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2);
@@ -223,18 +252,31 @@ public class MainScreen implements Screen {
 
     public GameActor getCollision(float x, float y) {
         for (College college : colleges) {
-            if (college != null)
-                if (college.collision(x, y))
+            if (college != null) {
+                if (college.collision(x, y)) {
                     return college;
+                }
+            }
         }
+
+        for(Weather weather : weathers) {
+            if (weather != null) {
+                if(weather.collision(x, y)) {
+                    return weather;
+                }
+            }
+        }
+
 //        for (Ship ship : ships) {
 //            if (ship != null)
 //                if (ship.collision(x, y))
 //                    return ship;
 //        }
-        if (player != null)
-            if (player.collision(x, y))
+        if (player != null) {
+            if (player.collision(x, y)) {
                 return player;
+            }
+        }
         return null;
     }
 
