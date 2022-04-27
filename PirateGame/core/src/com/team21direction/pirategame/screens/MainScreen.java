@@ -7,13 +7,16 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -32,6 +35,7 @@ public class MainScreen implements Screen {
     private final BitmapFont font;
     private final Music music;
     private final Sound cannonballSound;
+    private final Texture bg;
 
     private final OrthographicCamera camera;
 
@@ -75,6 +79,7 @@ public class MainScreen implements Screen {
         camera = new OrthographicCamera();
 
         batch = new SpriteBatch();
+        bg = new Texture(Gdx.files.internal("newmap.png"));
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
@@ -127,6 +132,12 @@ public class MainScreen implements Screen {
             success = player.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
         } while (!success);
         stage.addActor(player);
+        // send clouds to front so they're displayed on top of player
+        for(Actor actor : stage.getActors()) {
+            if (actor instanceof Weather) {
+                actor.toFront();
+            }
+        }
     }
 
     @Override
@@ -166,6 +177,7 @@ public class MainScreen implements Screen {
         ScreenUtils.clear(0, 0.6f, 1, 1);
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         stage.act(delta);
+
         stage.draw();
         batch.begin();
         font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2);
