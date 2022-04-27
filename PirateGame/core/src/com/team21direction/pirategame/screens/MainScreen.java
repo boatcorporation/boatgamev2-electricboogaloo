@@ -157,9 +157,9 @@ public class MainScreen implements Screen {
         stage.act(delta);
         stage.draw();
         batch.begin();
-        font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2);
-        font.draw(batch, "Exp: " + experience, player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2 - font.getLineHeight());
-        font.draw(batch, "Gold: " + gold, player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2 - font.getLineHeight() * 2);
+        font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2);
+        font.draw(batch, "Exp: " + experience, camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight());
+        font.draw(batch, "Gold: " + gold, camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 2);
         batch.end();
 
         boolean collegeActive = false;
