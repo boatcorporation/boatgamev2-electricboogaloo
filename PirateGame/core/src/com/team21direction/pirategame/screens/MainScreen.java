@@ -81,6 +81,7 @@ public class MainScreen implements Screen {
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
 
+
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
@@ -139,7 +140,12 @@ public class MainScreen implements Screen {
         }
 
         //update(Gdx.graphics.getDeltaTime());
-        camera.position.set(player.getX(), player.getY(), 0);
+
+        float lerp = 5f;
+        camera.position.x += (player.getX() - camera.position.x) * lerp * delta;
+        camera.position.y += (player.getY() - camera.position.y) * lerp * delta;
+
+        // camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
         update_keyboard();
 
