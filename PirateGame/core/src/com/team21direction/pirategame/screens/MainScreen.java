@@ -35,7 +35,6 @@ public class MainScreen implements Screen {
     private final BitmapFont font;
     private final Music music;
     private final Sound cannonballSound;
-    private final Texture bg;
 
     private final OrthographicCamera camera;
 
@@ -79,7 +78,6 @@ public class MainScreen implements Screen {
         camera = new OrthographicCamera();
 
         batch = new SpriteBatch();
-        bg = new Texture(Gdx.files.internal("newmap.png"));
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
