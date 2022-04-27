@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.team21direction.pirategame.actions.FireCannon;
 import com.team21direction.pirategame.actions.WhiteFlagRoutine;
 import com.team21direction.pirategame.screens.MainScreen;
@@ -23,7 +22,7 @@ public class College extends GameActor {
      * [Name] is the supplied name.
      * @param name the name of the college.
      */
-    public College(MainScreen screen, String name) {
+    public College(MainScreen screen, String name, double diffMult) {
         super(screen);
         this.radius = 350;
         this.name = name;
@@ -34,6 +33,7 @@ public class College extends GameActor {
         };
         collegeBase = new Sprite(collegeBases[2]);
         this.addAction(new FireCannon());
+        this.setDifficulty((int) (this.getMaxHealth() * diffMult));
     }
 
     /**

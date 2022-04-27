@@ -10,12 +10,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.StringBuilder;
+import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
@@ -61,26 +61,24 @@ public class TitleScreen implements Screen {
 
         Label title = new Label(PirateGame.TITLE, skin);
 
-        uiTable.add(title);
+        final SelectBox difficulty = new SelectBox(skin);
+        Array<String> difficulties= new Array();
+        difficulties.add("Select Difficulty", "Easy", "Normal", "Hard");
+        difficulty.setItems(difficulties);
 
-        uiTable.row();
+        Label instructions = new Label("Defeat all colleges to win.\nWASD to move.\nSPACE to fire cannons.\nM to toggle mute.\nESCAPE to pause.", skin);
 
-        TextButton playButton = new TextButton("Play", skin);
-
+        TextButton playButton = new TextButton("New Game", skin);
         // Listen for clicks and switch to the play screen when triggered.
         playButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                TitleScreen.this.game.mainScreen = new MainScreen(TitleScreen.this.game, difficulty.getSelected().toString());
                 TitleScreen.this.game.setScreen(TitleScreen.this.game.mainScreen);
             }
         });
 
-        uiTable.add(playButton);
-
-        uiTable.row();
-
         TextButton exitButton = new TextButton("Quit", skin);
-
         // Listen for clicks and switch to the play screen when triggered.
         exitButton.addListener(new ClickListener(){
             @Override
@@ -89,14 +87,19 @@ public class TitleScreen implements Screen {
             }
         });
 
-        uiTable.add(exitButton);
-
+        uiTable.add(title);
         uiTable.row();
 
-        Label instructions = new Label("Defeat all colleges to win.\nWASD to move.\nSPACE to fire cannons.\nM to toggle mute.\nESCAPE to pause.", skin);
+        uiTable.add(playButton);
+        uiTable.row();
+
+        uiTable.add(difficulty);
+        uiTable.row();
+
+        uiTable.add(exitButton);
+        uiTable.row();
 
         uiTable.add(instructions);
-
         stage.addActor(uiTable);
     }
 
