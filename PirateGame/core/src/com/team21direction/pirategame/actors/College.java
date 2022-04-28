@@ -60,7 +60,7 @@ public class College extends GameActor {
             if (!super.attack(damage)) {
                 collegeBase = new Sprite(collegeBases[0]);
                 this.addAction(new WhiteFlagRoutine());
-                screen.gold += screen.goldPerCollege;
+                screen.addGold(screen.goldPerCollege);
                 isWhiteFlag = true;
             }
             else if (this.getHealth() < (this.getMaxHealth() / 2)) collegeBase = new Sprite(collegeBases[1]);

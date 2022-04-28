@@ -14,8 +14,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -27,6 +32,7 @@ public class MainScreen implements Screen {
 
     public final PirateGame game;
     private final Batch batch;
+    private final Batch shopBatch;
 
     protected Stage stage;
     private final Viewport viewport;
@@ -35,6 +41,7 @@ public class MainScreen implements Screen {
     private final BitmapFont font;
     private final Music music;
     private final Sound cannonballSound;
+    private Shop shop;
 
     private final OrthographicCamera camera;
 
@@ -65,8 +72,11 @@ public class MainScreen implements Screen {
 
     private float timeSinceLastExpDrop = 0.0f;
     private float timeSinceLastMusicToggle = 0.0f;
+    private float timeSinceLastShopToggle = 0.0f;
 
     private boolean isPlayingMusic = true;
+    boolean isToggled = false;
+
 
     private double difficultyMultiplier = 1;
 
@@ -80,6 +90,7 @@ public class MainScreen implements Screen {
         camera = new OrthographicCamera();
 
         batch = new SpriteBatch();
+        shopBatch = new SpriteBatch();
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
@@ -145,6 +156,11 @@ public class MainScreen implements Screen {
                 actor.toFront();
             }
         }
+
+        shop = new Shop(shopBatch, player, this);
+
+
+
     }
 
     @Override
@@ -155,6 +171,7 @@ public class MainScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        timeSinceLastShopToggle += delta;
         timeSinceLastCannon += delta;
         timeSinceLastExpDrop += delta;
         timeSinceLastMusicToggle += delta;
@@ -189,13 +206,30 @@ public class MainScreen implements Screen {
         ScreenUtils.clear(0, 0.6f, 1, 1);
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         stage.act(delta);
-
         stage.draw();
+
+        shopBatch.setProjectionMatrix(shop.getStage().getCamera().combined);
+        if (Gdx.input.isKeyPressed(Input.Keys.B) && (timeSinceLastShopToggle >= 0.5f)) {
+            timeSinceLastShopToggle = 0.0f;
+            isToggled = !isToggled;
+        }
+        if(isToggled) {
+            Gdx.input.setInputProcessor(shop.getStage());
+            shop.getStage().draw();
+            shop.getStage().act(delta);
+        }
+        else {
+            Gdx.input.setInputProcessor(stage);
+
+        }
+
         batch.begin();
         font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2);
         font.draw(batch, "Exp: " + experience, camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight());
-        font.draw(batch, "Gold: " + gold, camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 2);
+        font.draw(batch, "Gold: " + player.getGold(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 2);
         batch.end();
+
+
 
         boolean collegeActive = false;
         for (College college : colleges) {
@@ -353,6 +387,11 @@ public class MainScreen implements Screen {
             else music.pause();
         }
 
+
+    }
+
+    public void addGold(int value) {
+        player.addGold(value);
     }
 
     public void fireCannon(GameActor attacker, Vector2 velocity) {

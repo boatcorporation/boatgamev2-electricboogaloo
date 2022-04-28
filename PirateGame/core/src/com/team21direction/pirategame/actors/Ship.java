@@ -20,6 +20,7 @@ public class Ship extends GameActor {
     private Sprite texture;
 
     private final boolean isPlayer;
+    private int gold;
 
     /**
      * Construct a new Ship which is a member of the supplied parentCollege.
@@ -48,6 +49,7 @@ public class Ship extends GameActor {
             this.setDifficulty((int) (this.getMaxHealth() * diffMult));
         } else {
             this.setDifficulty((int) (this.getMaxHealth() / diffMult));
+            this.gold = 0;
         }
     }
 
@@ -76,6 +78,18 @@ public class Ship extends GameActor {
             screen.game.setScreen(screen.game.lossScreen);
         }
         return isActive();
+    }
+
+    public int getGold() {
+        return this.gold;
+    }
+
+    public void setGold(int value) {
+        this.gold = value;
+    }
+
+    public void addGold(int value) {
+        this.gold += value;
     }
 
     public boolean isPlayer() {
