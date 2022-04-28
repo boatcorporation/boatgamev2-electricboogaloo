@@ -48,7 +48,6 @@ public class Shop {
         shopTable.row();
         shopTable.add(repairButton);
         stage.addActor(shopTable);
-        stage.setDebugAll(true);
 
     }
 

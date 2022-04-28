@@ -15,6 +15,7 @@ public class College extends GameActor {
     public Sprite collegeBase;
 
     public boolean isWhiteFlag = false;
+    public boolean conquered = false;
 
     /**
      * Constructs a new College with the given name.
@@ -43,6 +44,10 @@ public class College extends GameActor {
     public String getCollegeName() {
         return this.name;
     }
+
+    public boolean isConquered() { return this.conquered;}
+
+    public void setConquered(boolean conquered) { this.conquered = conquered; }
 
     public void setCollegeName(String name) {
         this.name = name;
