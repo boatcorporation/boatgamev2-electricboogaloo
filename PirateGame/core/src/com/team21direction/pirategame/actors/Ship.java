@@ -16,7 +16,7 @@ public class Ship extends GameActor {
 
     public College parentCollege; // The College this ship is allied with.
 
-    private final HashMap<Direction, Texture> textures;
+    private HashMap<Direction, Texture> textures;
     private Sprite texture;
 
     private final boolean isPlayer;
@@ -68,6 +68,25 @@ public class Ship extends GameActor {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public College getParentCollege() { return parentCollege; }
+
+    public String getParentCollegeName() { return parentCollege.getCollegeName(); }
+
+    public void setCollege(College playerCollege) {
+        this.parentCollege = playerCollege;
+        textures = new HashMap<>();
+        textures.put(Direction.Up, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-up.png")));
+        textures.put(Direction.UpLeft, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-upleft.png")));
+        textures.put(Direction.UpRight, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-upright.png")));
+        textures.put(Direction.Left, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-left.png")));
+        textures.put(Direction.Right, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-right.png")));
+        textures.put(Direction.Down, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-down.png")));
+        textures.put(Direction.DownLeft, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-downleft.png")));
+        textures.put(Direction.DownRight, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-downright.png")));
+
+        texture = new Sprite(textures.get(direction));
     }
 
     @Override

@@ -7,26 +7,22 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.actors.*;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainScreen implements Screen {
 
@@ -47,7 +43,7 @@ public class MainScreen implements Screen {
 
     private final Weather[] weathers;
     private final College[] colleges;
-    private final Ship[] ships;
+    public final Ship[] ships;
     public final Ship player;
     private final Vector2 position = new Vector2();
     private final Vector2 cannonball_velocity = new Vector2();
@@ -128,6 +124,8 @@ public class MainScreen implements Screen {
             } while (!success);
             stage.addActor(weathers[i]);
         }
+
+
         ships = new Ship[PirateGame.SHIPS_PER_COLLEGE * colleges.length];
         for (int i = 0; i < colleges.length; i++) {
             boolean success;
@@ -144,6 +142,8 @@ public class MainScreen implements Screen {
                 stage.addActor(ships[i + j]);
             }
         }
+
+
         player = new Ship(this, new College(this,"Vanbrugh", difficultyMultiplier), true, difficultyMultiplier);
         boolean success;
         do {
@@ -229,7 +229,18 @@ public class MainScreen implements Screen {
         font.draw(batch, "Gold: " + player.getGold(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 2);
         batch.end();
 
-
+        for (College college : colleges) {
+            if (!college.isActive() && !college.isConquered()) {
+                for (Ship ship : ships) {
+                    if (!(ship == null)) {
+                        if (ship.getParentCollegeName() == college.getCollegeName()) {
+                            ship.setCollege(player.getParentCollege());
+                        }
+                    }
+                }
+                college.setConquered(true);
+             }
+        }
 
         boolean collegeActive = false;
         for (College college : colleges) {
