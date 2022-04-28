@@ -66,7 +66,7 @@ public class TitleScreen implements Screen {
         difficulties.add("Select Difficulty", "Easy", "Normal", "Hard");
         difficulty.setItems(difficulties);
 
-        Label instructions = new Label("Defeat all colleges to win.\nWASD to move.\nSPACE to fire cannons.\nM to toggle mute.\nESCAPE to pause.", skin);
+        Label instructions = new Label("Defeat all colleges to win.\nWASD to move.\nSPACE to fire cannons.\nM to toggle mute.\nB to open shop\nESCAPE to pause.", skin);
 
         TextButton playButton = new TextButton("New Game", skin);
         // Listen for clicks and switch to the play screen when triggered.
