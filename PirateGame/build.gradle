@@ -1,3 +1,5 @@
+mainClassName = 'com.team21direction.pirategame.PirateGame'
+
 buildscript {
     
 
