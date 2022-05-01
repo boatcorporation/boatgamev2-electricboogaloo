@@ -2,6 +2,7 @@ package com.team21direction.pirategame.actions;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.team21direction.pirategame.PirateGame;
+import com.team21direction.pirategame.actors.GameActor;
 import com.team21direction.pirategame.actors.Ship;
 
 import java.util.Random;

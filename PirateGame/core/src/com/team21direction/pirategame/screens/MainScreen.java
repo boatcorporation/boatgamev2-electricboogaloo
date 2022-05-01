@@ -12,21 +12,23 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
-import com.team21direction.pirategame.actors.Cannonball;
-import com.team21direction.pirategame.actors.College;
-import com.team21direction.pirategame.actors.GameActor;
-import com.team21direction.pirategame.actors.Ship;
+import com.team21direction.pirategame.actors.*;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainScreen implements Screen {
 
     public final PirateGame game;
     private final Batch batch;
+    private final Batch shopBatch;
 
     protected Stage stage;
     private final Viewport viewport;
@@ -35,11 +37,13 @@ public class MainScreen implements Screen {
     private final BitmapFont font;
     private final Music music;
     private final Sound cannonballSound;
+    private Shop shop;
 
     private final OrthographicCamera camera;
 
+    private final Weather[] weathers;
     private final College[] colleges;
-    private final Ship[] ships;
+    public final Ship[] ships;
     public final Ship player;
     private final Vector2 position = new Vector2();
     private final Vector2 cannonball_velocity = new Vector2();
@@ -64,10 +68,15 @@ public class MainScreen implements Screen {
 
     private float timeSinceLastExpDrop = 0.0f;
     private float timeSinceLastMusicToggle = 0.0f;
+    private float timeSinceLastShopToggle = 0.0f;
 
     private boolean isPlayingMusic = true;
+    boolean isToggled = false;
 
-    public MainScreen(PirateGame game) {
+
+    private double difficultyMultiplier = 1;
+
+    public MainScreen(PirateGame game, String difficulty) {
         this.game = game;
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
@@ -77,9 +86,11 @@ public class MainScreen implements Screen {
         camera = new OrthographicCamera();
 
         batch = new SpriteBatch();
+        shopBatch = new SpriteBatch();
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
+
 
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
@@ -89,14 +100,32 @@ public class MainScreen implements Screen {
 
         cannonballSound = Gdx.audio.newSound(Gdx.files.internal("cannonball.mp3"));
 
+        if (difficulty == "Easy") {
+            difficultyMultiplier = 0.5;
+        } else if (difficulty == "Hard") {
+            difficultyMultiplier = 2;
+        }
+
         stage = new Stage(viewport, batch);
 
+
         colleges = new College[] {
-                new College(this, "Derwent"),
-                new College(this, "Langwith"),
-                new College(this, "Constantine"),
-                new College(this, "Halifax"),
+                new College(this, "Derwent", difficultyMultiplier),
+                new College(this, "Langwith", difficultyMultiplier),
+                new College(this, "Constantine", difficultyMultiplier),
+                new College(this, "Halifax", difficultyMultiplier),
         };
+        weathers = new Weather[200];
+        for(int i = 0; i < 200; i++) {
+            weathers[i] = new Weather(this);
+            boolean success;
+            do {
+                success = weathers[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+            } while (!success);
+            stage.addActor(weathers[i]);
+        }
+
+
         ships = new Ship[PirateGame.SHIPS_PER_COLLEGE * colleges.length];
         for (int i = 0; i < colleges.length; i++) {
             boolean success;
@@ -106,19 +135,32 @@ public class MainScreen implements Screen {
 
             stage.addActor(colleges[i]);
             for (int j = 0; j < PirateGame.SHIPS_PER_COLLEGE; j++) {
-                ships[i + j] = new Ship(this, colleges[i]);
+                ships[i + j] = new Ship(this, colleges[i], difficultyMultiplier);
                 do {
                     success = ships[i + j].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
                 } while (!success);
                 stage.addActor(ships[i + j]);
             }
         }
-        player = new Ship(this, new College(this,"Vanbrugh"), true);
+
+
+        player = new Ship(this, new College(this,"Vanbrugh", difficultyMultiplier), true, difficultyMultiplier);
         boolean success;
         do {
             success = player.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
         } while (!success);
         stage.addActor(player);
+        // send clouds to front so they're displayed on top of player
+        for(Actor actor : stage.getActors()) {
+            if (actor instanceof Weather) {
+                actor.toFront();
+            }
+        }
+
+        shop = new Shop(shopBatch, player, this);
+
+
+
     }
 
     @Override
@@ -129,9 +171,19 @@ public class MainScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        timeSinceLastShopToggle += delta;
         timeSinceLastCannon += delta;
         timeSinceLastExpDrop += delta;
         timeSinceLastMusicToggle += delta;
+
+        GameActor collidingWith = getCollision(player.getX(), player.getY());
+        if(collidingWith instanceof Weather) {
+            if(timeSinceLastExpDrop >= 2.0f) {
+                player.attack(1);
+                experience++;
+                timeSinceLastExpDrop = 0.0f;
+            }
+        }
 
         if (timeSinceLastExpDrop >= 10.0f) {
             timeSinceLastExpDrop = 0.0f;
@@ -139,7 +191,12 @@ public class MainScreen implements Screen {
         }
 
         //update(Gdx.graphics.getDeltaTime());
-        camera.position.set(player.getX(), player.getY(), 0);
+
+        float lerp = 5f;
+        camera.position.x += (player.getX() - camera.position.x) * lerp * delta;
+        camera.position.y += (player.getY() - camera.position.y) * lerp * delta;
+
+        // camera.position.set(player.getX(), player.getY(), 0);
         camera.update();
         update_keyboard();
 
@@ -150,11 +207,40 @@ public class MainScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         stage.act(delta);
         stage.draw();
+
+        shopBatch.setProjectionMatrix(shop.getStage().getCamera().combined);
+        if (Gdx.input.isKeyPressed(Input.Keys.B) && (timeSinceLastShopToggle >= 0.5f)) {
+            timeSinceLastShopToggle = 0.0f;
+            isToggled = !isToggled;
+        }
+        if(isToggled) {
+            Gdx.input.setInputProcessor(shop.getStage());
+            shop.getStage().draw();
+            shop.getStage().act(delta);
+        }
+        else {
+            Gdx.input.setInputProcessor(stage);
+
+        }
+
         batch.begin();
-        font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2);
-        font.draw(batch, "Exp: " + experience, player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2 - font.getLineHeight());
-        font.draw(batch, "Gold: " + gold, player.getX() - camera.viewportWidth / 2, player.getY() + camera.viewportHeight / 2 - font.getLineHeight() * 2);
+        font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2);
+        font.draw(batch, "Exp: " + experience, camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight());
+        font.draw(batch, "Gold: " + player.getGold(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 2);
         batch.end();
+
+        for (College college : colleges) {
+            if (!college.isActive() && !college.isConquered()) {
+                for (Ship ship : ships) {
+                    if (!(ship == null)) {
+                        if (ship.getParentCollegeName() == college.getCollegeName()) {
+                            ship.setCollege(player.getParentCollege());
+                        }
+                    }
+                }
+                college.setConquered(true);
+             }
+        }
 
         boolean collegeActive = false;
         for (College college : colleges) {
@@ -217,18 +303,31 @@ public class MainScreen implements Screen {
 
     public GameActor getCollision(float x, float y) {
         for (College college : colleges) {
-            if (college != null)
-                if (college.collision(x, y))
+            if (college != null) {
+                if (college.collision(x, y)) {
                     return college;
+                }
+            }
         }
+
+        for(Weather weather : weathers) {
+            if (weather != null) {
+                if(weather.collision(x, y)) {
+                    return weather;
+                }
+            }
+        }
+
 //        for (Ship ship : ships) {
 //            if (ship != null)
 //                if (ship.collision(x, y))
 //                    return ship;
 //        }
-        if (player != null)
-            if (player.collision(x, y))
+        if (player != null) {
+            if (player.collision(x, y)) {
                 return player;
+            }
+        }
         return null;
     }
 
@@ -299,6 +398,11 @@ public class MainScreen implements Screen {
             else music.pause();
         }
 
+
+    }
+
+    public void addGold(int value) {
+        player.addGold(value);
     }
 
     public void fireCannon(GameActor attacker, Vector2 velocity) {

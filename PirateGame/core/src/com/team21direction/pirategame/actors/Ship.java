@@ -10,24 +10,25 @@ import com.team21direction.pirategame.screens.MainScreen;
 import java.util.HashMap;
 
 public class Ship extends GameActor {
+
     public enum Direction{Up, UpLeft, UpRight, Left, Right, Down, DownLeft, DownRight}
     private Direction direction = Direction.Right;
 
     public College parentCollege; // The College this ship is allied with.
 
-    private final HashMap<Direction, Texture> textures;
+    private HashMap<Direction, Texture> textures;
     private Sprite texture;
 
     private final boolean isPlayer;
+    private int gold;
 
     /**
      * Construct a new Ship which is a member of the supplied parentCollege.
      * @param parentCollege the College which the ship is allied to.
      */
-    public Ship(MainScreen screen, College parentCollege, boolean isPlayer) {
+    public Ship(MainScreen screen, College parentCollege, boolean isPlayer, double diffMult) {
         super(screen);
         this.radius = 150;
-
         this.parentCollege = parentCollege;
         textures = new HashMap<>();
         textures.put(Direction.Up, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-up.png")));
@@ -43,10 +44,17 @@ public class Ship extends GameActor {
 
         this.isPlayer = isPlayer;
         if (!isPlayer) this.addAction(new MoveRandomly());
+        this.diffMult = diffMult;
+        if (!isPlayer) {
+            this.setDifficulty((int) (this.getMaxHealth() * diffMult));
+        } else {
+            this.setDifficulty((int) (this.getMaxHealth() / diffMult));
+            this.gold = 0;
+        }
     }
 
-    public Ship(MainScreen screen, College parentCollege) {
-        this(screen, parentCollege, false);
+    public Ship(MainScreen screen, College parentCollege, double diffMult) {
+        this(screen, parentCollege, false, diffMult);
     }
 
     /**
@@ -62,6 +70,25 @@ public class Ship extends GameActor {
         return direction;
     }
 
+    public College getParentCollege() { return parentCollege; }
+
+    public String getParentCollegeName() { return parentCollege.getCollegeName(); }
+
+    public void setCollege(College playerCollege) {
+        this.parentCollege = playerCollege;
+        textures = new HashMap<>();
+        textures.put(Direction.Up, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-up.png")));
+        textures.put(Direction.UpLeft, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-upleft.png")));
+        textures.put(Direction.UpRight, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-upright.png")));
+        textures.put(Direction.Left, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-left.png")));
+        textures.put(Direction.Right, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-right.png")));
+        textures.put(Direction.Down, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-down.png")));
+        textures.put(Direction.DownLeft, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-downleft.png")));
+        textures.put(Direction.DownRight, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-downright.png")));
+
+        texture = new Sprite(textures.get(direction));
+    }
+
     @Override
     public boolean attack(int damage) {
         super.attack(damage);
@@ -70,6 +97,18 @@ public class Ship extends GameActor {
             screen.game.setScreen(screen.game.lossScreen);
         }
         return isActive();
+    }
+
+    public int getGold() {
+        return this.gold;
+    }
+
+    public void setGold(int value) {
+        this.gold = value;
+    }
+
+    public void addGold(int value) {
+        this.gold += value;
     }
 
     public boolean isPlayer() {

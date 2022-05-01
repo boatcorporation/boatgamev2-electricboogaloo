@@ -61,15 +61,14 @@ public class WinScreen implements Screen {
 
         uiTable.row();
 
-        TextButton playButton = new TextButton("Play again", skin);
+        TextButton playButton = new TextButton("Main Menu", skin);
 
         // Listen for clicks and switch to the play screen when triggered.
         playButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 WinScreen.this.game.mainScreen.dispose();
-                WinScreen.this.game.mainScreen = new MainScreen(WinScreen.this.game);
-                WinScreen.this.game.setScreen(WinScreen.this.game.mainScreen);
+                WinScreen.this.game.setScreen(WinScreen.this.game.titleScreen);
             }
         });
 

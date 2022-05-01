@@ -61,15 +61,14 @@ public class LossScreen implements Screen {
 
         uiTable.row();
 
-        TextButton playButton = new TextButton("Play again", skin);
+        TextButton playButton = new TextButton("Main Menu", skin);
 
         // Listen for clicks and switch to the play screen when triggered.
         playButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 LossScreen.this.game.mainScreen.dispose();
-                LossScreen.this.game.mainScreen = new MainScreen(LossScreen.this.game);
-                LossScreen.this.game.setScreen(LossScreen.this.game.mainScreen);
+                LossScreen.this.game.setScreen(LossScreen.this.game.titleScreen);
             }
         });
 

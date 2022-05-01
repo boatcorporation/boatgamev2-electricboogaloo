@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.team21direction.pirategame.actions.FireCannon;
 import com.team21direction.pirategame.actions.WhiteFlagRoutine;
 import com.team21direction.pirategame.screens.MainScreen;
@@ -16,6 +15,7 @@ public class College extends GameActor {
     public Sprite collegeBase;
 
     public boolean isWhiteFlag = false;
+    public boolean conquered = false;
 
     /**
      * Constructs a new College with the given name.
@@ -23,7 +23,7 @@ public class College extends GameActor {
      * [Name] is the supplied name.
      * @param name the name of the college.
      */
-    public College(MainScreen screen, String name) {
+    public College(MainScreen screen, String name, double diffMult) {
         super(screen);
         this.radius = 350;
         this.name = name;
@@ -34,6 +34,7 @@ public class College extends GameActor {
         };
         collegeBase = new Sprite(collegeBases[2]);
         this.addAction(new FireCannon());
+        this.setDifficulty((int) (this.getMaxHealth() * diffMult));
     }
 
     /**
@@ -43,6 +44,10 @@ public class College extends GameActor {
     public String getCollegeName() {
         return this.name;
     }
+
+    public boolean isConquered() { return this.conquered;}
+
+    public void setConquered(boolean conquered) { this.conquered = conquered; }
 
     public void setCollegeName(String name) {
         this.name = name;
@@ -60,7 +65,7 @@ public class College extends GameActor {
             if (!super.attack(damage)) {
                 collegeBase = new Sprite(collegeBases[0]);
                 this.addAction(new WhiteFlagRoutine());
-                screen.gold += screen.goldPerCollege;
+                screen.addGold(screen.goldPerCollege);
                 isWhiteFlag = true;
             }
             else if (this.getHealth() < (this.getMaxHealth() / 2)) collegeBase = new Sprite(collegeBases[1]);
