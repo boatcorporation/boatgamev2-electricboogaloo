@@ -1,3 +1,4 @@
+
 ﻿a)
 
 The software engineering method used by the team to develop the Pirate Game was the scrum agile method. We implemented this method as it prioritizes the need of the customer and bases the product around their needs. The scrum method involves: 
