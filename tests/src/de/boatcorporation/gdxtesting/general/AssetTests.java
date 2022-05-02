@@ -128,4 +128,58 @@ public class AssetTests {
 		}
     }
 
+    @Test
+    public void MusicExists(){
+        String[] files = { "cannonball", "music" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".mp3 does not exist",
+					Gdx.files.internal("../core/assets/" + f + ".mp3").exists());
+		}
+    }
+
+    @Test
+    public void MiscPngExists(){
+        String[] files = { "cannonball", "uiskin" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".png does not exist",
+					Gdx.files.internal("../core/assets/" + f + ".png").exists());
+		}
+    }
+
+    @Test
+    public void OggSoundsExists(){
+        String[] files = { "titleMusic" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".ogg does not exist",
+					Gdx.files.internal("../core/assets/" + f + ".ogg").exists());
+		}
+    }
+
+    @Test
+    public void FontExists(){
+        String[] files = { "default" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".fnt does not exist",
+					Gdx.files.internal("../core/assets/" + f + ".fnt").exists());
+		}
+    }
+
+    @Test
+    public void AtlasExists(){
+        String[] files = { "uiskin" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".atlas does not exist",
+					Gdx.files.internal("../core/assets/" + f + ".atlas").exists());
+		}
+    }
+
+    @Test
+    public void JsonExists(){
+        String[] files = { "uiskin" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".json does not exist",
+					Gdx.files.internal("../core/assets/" + f + ".json").exists());
+		}
+    }
+
 }
