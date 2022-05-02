@@ -69,5 +69,37 @@ public class AssetTests {
 					Gdx.files.internal("../core/assets/ships/" + f + ".png").exists());
 		}
     }
-    
+
+    @Test
+    public void LangwithShipExists(){
+        String[] files = { "Langwith-ship-down"
+        "Langwith-ship-downleft",
+        "Langwith-ship-downright",
+        "Langwith-ship-left",
+        "Langwith-ship-right",
+        "Langwith-ship-up",
+        "Langwith-ship-upleft",
+        "Langwith-ship-upright" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".png does not exist",
+					Gdx.files.internal("../core/assets/ships/" + f + ".png").exists());
+		}
+    }
+
+    @Test
+    public void VanbrughShipExists(){
+        String[] files = { "Vanbrugh-ship-down"
+        "Vanbrugh-ship-downleft",
+        "Vanbrugh-ship-downright",
+        "Vanbrugh-ship-left",
+        "Vanbrugh-ship-right",
+        "Vanbrugh-ship-up",
+        "Vanbrugh-ship-upleft",
+        "Vanbrugh-ship-upright" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".png does not exist",
+					Gdx.files.internal("../core/assets/ships/" + f + ".png").exists());
+		}
+    }
+
 }
