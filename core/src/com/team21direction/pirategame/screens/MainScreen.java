@@ -29,8 +29,10 @@ public class MainScreen implements Screen {
     public final PirateGame game;
     private final Batch batch;
     private final Batch shopBatch;
+    private final Batch weatherBatch;
 
     protected Stage stage;
+    protected Stage weatherStage;
     private final Viewport viewport;
     protected Skin skin;
     protected TextureAtlas atlas;
@@ -87,6 +89,7 @@ public class MainScreen implements Screen {
 
         batch = new SpriteBatch();
         shopBatch = new SpriteBatch();
+        weatherBatch = new SpriteBatch();
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
@@ -107,6 +110,7 @@ public class MainScreen implements Screen {
         }
 
         stage = new Stage(viewport, batch);
+        weatherStage = new Stage(viewport, weatherBatch);
 
 
         colleges = new College[] {
@@ -122,7 +126,7 @@ public class MainScreen implements Screen {
             do {
                 success = weathers[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
             } while (!success);
-            stage.addActor(weathers[i]);
+            weatherStage.addActor(weathers[i]);
         }
 
 
@@ -151,11 +155,6 @@ public class MainScreen implements Screen {
         } while (!success);
         stage.addActor(player);
         // send clouds to front so they're displayed on top of player
-        for(Actor actor : stage.getActors()) {
-            if (actor instanceof Weather) {
-                actor.toFront();
-            }
-        }
 
         shop = new Shop(shopBatch, player, this);
 
@@ -207,6 +206,8 @@ public class MainScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         stage.act(delta);
         stage.draw();
+        weatherStage.act(delta);
+        weatherStage.draw();
 
         shopBatch.setProjectionMatrix(shop.getStage().getCamera().combined);
         if (Gdx.input.isKeyPressed(Input.Keys.B) && (timeSinceLastShopToggle >= 0.5f)) {
