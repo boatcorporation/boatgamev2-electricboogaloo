@@ -12,17 +12,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.actors.*;
-
-import java.util.ArrayList;
-import java.util.Objects;
+import com.team21direction.pirategame.Interactables.Powerup;
 
 public class MainScreen implements Screen {
 
@@ -45,6 +43,7 @@ public class MainScreen implements Screen {
 
     private final Weather[] weathers;
     private final College[] colleges;
+    private final Powerup[] powerups;
     public final Ship[] ships;
     public final Ship player;
     private final Vector2 position = new Vector2();
@@ -71,6 +70,8 @@ public class MainScreen implements Screen {
     private float timeSinceLastExpDrop = 0.0f;
     private float timeSinceLastMusicToggle = 0.0f;
     private float timeSinceLastShopToggle = 0.0f;
+    private float timeSinceLastPowerup = 0.0f;
+    private boolean isPoweredUp = false;
 
     private boolean isPlayingMusic = true;
     boolean isToggled = false;
@@ -129,6 +130,16 @@ public class MainScreen implements Screen {
             weatherStage.addActor(weathers[i]);
         }
 
+        powerups = new Powerup[15];
+        for(int i = 0; i < 15; i++) {
+            powerups[i] = new Powerup(this);
+            boolean success;
+            do {
+                success = powerups[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+            } while (!success);
+            stage.addActor(powerups[i]);
+        }
+
 
         ships = new Ship[PirateGame.SHIPS_PER_COLLEGE * colleges.length];
         for (int i = 0; i < colleges.length; i++) {
@@ -174,6 +185,7 @@ public class MainScreen implements Screen {
         timeSinceLastCannon += delta;
         timeSinceLastExpDrop += delta;
         timeSinceLastMusicToggle += delta;
+        timeSinceLastPowerup += delta;
 
         GameActor collidingWith = getCollision(player.getX(), player.getY());
         if(collidingWith instanceof Weather) {
@@ -183,6 +195,21 @@ public class MainScreen implements Screen {
                 timeSinceLastExpDrop = 0.0f;
             }
         }
+        if(!isPoweredUp) {
+            if (collidingWith instanceof Powerup) {
+                isPoweredUp = true;
+                collidingWith.remove();
+                player.applyPowerup((Powerup)collidingWith);
+                timeSinceLastPowerup = 0;
+            }
+        } else {
+            if(timeSinceLastPowerup > 2.0f) {
+                isPoweredUp = false;
+                player.removePowerup();
+            }
+        }
+
+
 
         if (timeSinceLastExpDrop >= 10.0f) {
             timeSinceLastExpDrop = 0.0f;
@@ -329,6 +356,16 @@ public class MainScreen implements Screen {
             }
         }
 
+        if(powerups != null) {
+            for (Powerup powerup : powerups) {
+                if (powerup != null) {
+                    if (powerup.collision(x, y)) {
+                        return powerup;
+                    }
+                }
+            }
+        }
+
 //        for (Ship ship : ships) {
 //            if (ship != null)
 //                if (ship.collision(x, y))
@@ -346,8 +383,8 @@ public class MainScreen implements Screen {
 
     public void update_keyboard() {
 
-        float speedl = 4f + experience / 10f;
-        float speedd = 2.83f + experience / 20f;
+        float speedl = player.getSpeedl();
+        float speedd = player.getSpeedd();
 
 
 

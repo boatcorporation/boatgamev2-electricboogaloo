@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.team21direction.pirategame.actions.MoveRandomly;
 import com.team21direction.pirategame.actions.ShipCannon;
+import com.team21direction.pirategame.Interactables.Powerup;
 import com.team21direction.pirategame.screens.MainScreen;
 
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class Ship extends GameActor {
 
     private final boolean isPlayer;
     private int gold;
+
+    private float speedl;
+    private float speedd;
+
 
     /**
      * Construct a new Ship which is a member of the supplied parentCollege.
@@ -55,6 +60,9 @@ public class Ship extends GameActor {
             this.setDifficulty((int) (this.getMaxHealth() / diffMult));
             this.gold = 0;
         }
+
+        this.speedl = 4f + screen.experience / 10f;
+        this.speedd = 2.83f + screen.experience / 20f;
     }
 
     public Ship(MainScreen screen, College parentCollege, double diffMult) {
@@ -104,6 +112,37 @@ public class Ship extends GameActor {
         return isActive();
     }
 
+    public void applyPowerup(Powerup powerup) {
+        System.out.println("Powerup");
+        System.out.println(powerup.getType());
+        switch(powerup.getType()) {
+            case Speed:
+                this.speedd = (2.83f + screen.experience / 20f) * 2;
+                this.speedl = (4f + screen.experience / 10f) * 2;
+                break;
+            case Health:
+                this.addHealth(10);
+                break;
+            case Invisible:
+                this.setVisible(false);
+                break;
+            case Experience:
+                this.screen.experience += 5;
+                break;
+            case Gold:
+                this.gold += 10;
+                break;
+        }
+    }
+
+    public void removePowerup() {
+        System.out.println("Removed");
+
+        this.speedl = 4f + screen.experience / 10f;
+        this.speedd = 2.83f + screen.experience / 20f;
+        this.setVisible(true);
+    }
+
     public int getGold() {
         return this.gold;
     }
@@ -130,5 +169,21 @@ public class Ship extends GameActor {
         if (isActive()) {
             batch.draw(texture, getX() - (texture.getWidth() / 2.0f), getY() - (texture.getHeight() / 2.0f));
         }
+    }
+
+    public float getSpeedl() {
+        return speedl;
+    }
+
+    public void setSpeedl(float speed) {
+        this.speedl = speed;
+    }
+
+    public float getSpeedd() {
+        return speedd;
+    }
+
+    public void setSpeedd(float speed) {
+        this.speedd = speed;
     }
 }
