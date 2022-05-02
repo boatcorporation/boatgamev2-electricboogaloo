@@ -135,7 +135,7 @@ public class GameActor extends Actor {
      * @return
      */
     public boolean collision(float x, float y) {
-        return (this.x - this.radius <= x && x <= this.x + this.radius
-                && this.y - this.radius <= y && y <= this.y + this.radius);
+        double distance = Math.hypot(this.x - x, this.y - y);
+        return (distance < this.radius);
     }
 }

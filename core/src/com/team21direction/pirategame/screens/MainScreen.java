@@ -233,7 +233,7 @@ public class MainScreen implements Screen {
         for (College college : colleges) {
             if (!college.isActive() && !college.isConquered()) {
                 for (Ship ship : ships) {
-                    if (!(ship == null)) {
+                    if (ship != null) {
                         if (ship.getParentCollegeName() == college.getCollegeName()) {
                             ship.setCollege(player.getParentCollege());
                         }
@@ -303,6 +303,16 @@ public class MainScreen implements Screen {
 //    }
 
     public GameActor getCollision(float x, float y) {
+        if (ships != null) {
+            for (Ship ship : ships) {
+                if (ship != null) {
+                    if (ship.collision(x, y)) {
+                        return ship;
+                    }
+                }
+            }
+        }
+
         for (College college : colleges) {
             if (college != null) {
                 if (college.collision(x, y)) {
@@ -407,7 +417,7 @@ public class MainScreen implements Screen {
     }
 
     public void fireCannon(GameActor attacker, Vector2 velocity) {
-        Cannonball ball = new Cannonball(this, attacker.getX(), attacker.getY(), velocity, attacker);
+        Cannonball ball = new Cannonball(this, attacker.getX(), attacker.getY(), velocity, attacker, colleges, ships);
         stage.addActor(ball);
         if (isPlayingMusic) cannonballSound.play();
     }

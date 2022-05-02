@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.team21direction.pirategame.actions.MoveRandomly;
+import com.team21direction.pirategame.actions.ShipCannon;
 import com.team21direction.pirategame.screens.MainScreen;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class Ship extends GameActor {
 
     private HashMap<Direction, Texture> textures;
     private Sprite texture;
+    private ShipCannon cannon;
 
     private final boolean isPlayer;
     private int gold;
@@ -41,12 +43,14 @@ public class Ship extends GameActor {
         textures.put(Direction.DownRight, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-downright.png")));
 
         texture = new Sprite(textures.get(direction));
+        cannon = new ShipCannon();
 
         this.isPlayer = isPlayer;
-        if (!isPlayer) this.addAction(new MoveRandomly());
         this.diffMult = diffMult;
         if (!isPlayer) {
             this.setDifficulty((int) (this.getMaxHealth() * diffMult));
+            this.addAction(cannon);
+            this.addAction(new MoveRandomly());
         } else {
             this.setDifficulty((int) (this.getMaxHealth() / diffMult));
             this.gold = 0;
@@ -87,6 +91,7 @@ public class Ship extends GameActor {
         textures.put(Direction.DownRight, new Texture(Gdx.files.internal("ships/" + parentCollege.getCollegeName() + "-ship-downright.png")));
 
         texture = new Sprite(textures.get(direction));
+        this.removeAction(this.cannon);
     }
 
     @Override
