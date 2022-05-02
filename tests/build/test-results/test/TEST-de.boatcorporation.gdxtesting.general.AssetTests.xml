@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="de.tomgrill.gdxtesting.examples.AssetExistsExampleTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2022-05-02T14:32:15" hostname="Charlottes-MacBook-Pro.local" time="0.009">
+<testsuite name="de.boatcorporation.gdxtesting.general.AssetTests" tests="1" skipped="0" failures="1" errors="0" timestamp="2022-05-02T15:14:59" hostname="Charlottes-MacBook-Pro.local" time="0.008">
   <properties/>
-  <testcase name="badlogicLogoFileExists" classname="de.tomgrill.gdxtesting.examples.AssetExistsExampleTest" time="0.009">
-    <failure message="java.lang.AssertionError: This test will only pass when the badlogic.jpg file coming with a new project setup has not been deleted." type="java.lang.AssertionError">java.lang.AssertionError: This test will only pass when the badlogic.jpg file coming with a new project setup has not been deleted.
+  <testcase name="WeatherExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.008">
+    <failure message="java.lang.AssertionError: the file weather.png does not exist" type="java.lang.AssertionError">java.lang.AssertionError: the file weather.png does not exist
 	at org.junit.Assert.fail(Assert.java:89)
 	at org.junit.Assert.assertTrue(Assert.java:42)
-	at de.tomgrill.gdxtesting.examples.AssetExistsExampleTest.badlogicLogoFileExists(AssetExistsExampleTest.java:33)
+	at de.boatcorporation.gdxtesting.general.AssetTests.WeatherExists(AssetTests.java:20)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
@@ -16,7 +16,7 @@
 	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
 	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
 	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at de.tomgrill.gdxtesting.GdxTestRunner.render(GdxTestRunner.java:59)
+	at de.boatcorporation.gdxtesting.GdxTestRunner.render(GdxTestRunner.java:59)
 	at com.badlogic.gdx.backends.headless.HeadlessApplication.mainLoop(HeadlessApplication.java:128)
 	at com.badlogic.gdx.backends.headless.HeadlessApplication$1.run(HeadlessApplication.java:94)
 </failure>
