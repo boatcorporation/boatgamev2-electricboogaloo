@@ -18,7 +18,7 @@ public class AssetTests {
 		String[] files = { "weather" };
 		for (String f : files) {
 			assertTrue("the file " + f + ".png does not exist",
-					Gdx.files.internal("../core/assets/weather" + f + ".png").exists());
+					Gdx.files.internal("../core/assets/weather/" + f + ".png").exists());
 		}
 	}
     
