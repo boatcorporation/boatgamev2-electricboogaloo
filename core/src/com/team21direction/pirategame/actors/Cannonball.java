@@ -18,12 +18,12 @@ public class Cannonball extends GameActor {
 
     public boolean live = true;
 
-    public Cannonball(MainScreen screen, float x, float y, Vector2 direction, GameActor attacker) {
+    public Cannonball(MainScreen screen, float x, float y, Vector2 direction, GameActor attacker, College[] colleges, Ship[] ships) {
         super(screen);
         this.attacker = attacker;
         this.setPosition(x, y);
         this.direction.set(direction);
-        this.addAction(new CannonballAction());
+        this.addAction(new CannonballAction(attacker, colleges, ships));
     }
 
     /**
