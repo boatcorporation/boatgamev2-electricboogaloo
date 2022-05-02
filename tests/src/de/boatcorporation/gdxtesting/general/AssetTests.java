@@ -101,6 +101,31 @@ public class AssetTests {
 					Gdx.files.internal("../core/assets/ships/" + f + ".png").exists());
 		}
     }
-    
+
+    @Test
+    public void CollegeExists(){
+        String[] files = { "Constantine-college-fullhealth",
+            "Derwent-college-fullhealth",
+            "Halifax-college-fullhealth",
+            "Langwith-college-fullhealth",
+            "Vanbrugh-college-fullhealth" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".png does not exist",
+					Gdx.files.internal("../core/assets/colleges/" + f + ".png").exists());
+		}
+    }
+
+    @Test
+    public void CollegeDefeatExists(){
+        String[] files = { "college-defeated-0",
+        "college-defeated-1",
+        "college-defeated-2",
+        "college-defeated-3",
+        "college-halfhealth" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".png does not exist",
+					Gdx.files.internal("../core/assets/colleges/" + f + ".png").exists());
+		}
+    }
 
 }
