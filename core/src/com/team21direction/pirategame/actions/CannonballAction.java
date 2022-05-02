@@ -1,6 +1,7 @@
 package com.team21direction.pirategame.actions;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.actors.*;
 
 import java.util.Objects;
