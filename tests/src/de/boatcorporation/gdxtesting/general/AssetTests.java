@@ -72,7 +72,7 @@ public class AssetTests {
 
     @Test
     public void LangwithShipExists(){
-        String[] files = { "Langwith-ship-down"
+        String[] files = { "Langwith-ship-down",
         "Langwith-ship-downleft",
         "Langwith-ship-downright",
         "Langwith-ship-left",
@@ -88,7 +88,7 @@ public class AssetTests {
 
     @Test
     public void VanbrughShipExists(){
-        String[] files = { "Vanbrugh-ship-down"
+        String[] files = { "Vanbrugh-ship-down",
         "Vanbrugh-ship-downleft",
         "Vanbrugh-ship-downright",
         "Vanbrugh-ship-left",
@@ -101,5 +101,6 @@ public class AssetTests {
 					Gdx.files.internal("../core/assets/ships/" + f + ".png").exists());
 		}
     }
+    
 
 }
