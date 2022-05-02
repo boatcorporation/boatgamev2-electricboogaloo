@@ -1,6 +1,7 @@
 package com.team21direction.pirategame.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
@@ -164,7 +165,7 @@ public class MainScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(new InputMultiplexer(stage, shop.getStage()));
         if (isPlayingMusic) music.play();
     }
 
@@ -215,13 +216,8 @@ public class MainScreen implements Screen {
             isToggled = !isToggled;
         }
         if(isToggled) {
-            Gdx.input.setInputProcessor(shop.getStage());
             shop.getStage().draw();
             shop.getStage().act(delta);
-        }
-        else {
-            Gdx.input.setInputProcessor(stage);
-
         }
 
         batch.begin();
@@ -281,6 +277,10 @@ public class MainScreen implements Screen {
         batch.dispose();
         skin.dispose();
         atlas.dispose();
+        shop.dispose();
+        shopBatch.dispose();
+        weatherStage.dispose();
+        stage.dispose();
     }
 
     public boolean touchDragged(int screenX, int screenY, int pointer) {
