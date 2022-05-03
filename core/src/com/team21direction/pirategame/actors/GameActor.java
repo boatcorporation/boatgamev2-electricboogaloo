@@ -10,6 +10,7 @@ public class GameActor extends Actor {
     private int maxHealth = 100;
     private int health = maxHealth;
     private static int damage = 10;
+    private boolean invulnerable = false;
 
     private float x = 0.0f;
     private float y = 0.0f;
@@ -130,12 +131,10 @@ public class GameActor extends Actor {
         return true;
     }
 
-    /**
-     * Returns
-     * @param x
-     * @param y
-     * @return
-     */
+    public boolean isInvulnerable() { return invulnerable; }
+
+    public void setInvulnerable(boolean invulnerable) { this.invulnerable = invulnerable; }
+    
     public boolean collision(float x, float y) {
         double distance = Math.hypot(this.x - x, this.y - y);
         return (distance < this.radius);

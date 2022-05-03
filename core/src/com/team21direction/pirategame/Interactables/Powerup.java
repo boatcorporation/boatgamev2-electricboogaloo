@@ -23,7 +23,7 @@ public class Powerup extends GameActor {
         type = Type.values()[new Random().nextInt(Type.values().length)];
         speedTexture = new Texture(Gdx.files.internal("powerups/" + type.toString() + ".png"));
         speedSprite = new Sprite(speedTexture);
-        this.radius = 150;
+        this.radius = 300;
     }
 
     public Type getType() {
