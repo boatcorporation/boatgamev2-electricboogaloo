@@ -389,8 +389,8 @@ public class MainScreen implements Screen {
     public GameActor getCollision(float x, float y) {
         if (ships != null) {
             for (Ship ship : ships) {
-                if (ship != null) {
-                    if (ship.collision(x, y) && ship.isActive()) {
+                if (ship != null && ship.isActive()) {
+                    if (ship.collision(x, y)) {
                         return ship;
                     }
                 }
