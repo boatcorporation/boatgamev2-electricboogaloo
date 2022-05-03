@@ -1,6 +1,7 @@
 package com.team21direction.pirategame.actions;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.team21direction.pirategame.Interactables.Powerup;
 import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.actors.*;
 
@@ -11,7 +12,6 @@ public class CannonballAction extends Action {
     float liveTime = 0.0f;
     private final GameActor attacker;
     private final String collegeName;
-    private String victimCollege;
 
     public CannonballAction(GameActor attacker, College[] colleges, ArrayList<Ship> ships) {
         super();
@@ -23,7 +23,6 @@ public class CannonballAction extends Action {
         } else {
             this.collegeName = "";
         }
-        this.victimCollege = "";
     }
     /**
      * Move the cannonball each frame for as long as it's alive.
@@ -38,25 +37,24 @@ public class CannonballAction extends Action {
         float deltaY = (int)(cannonball.direction.y * 5);
         int damage = cannonball.getDamage();
         GameActor victim = cannonball.screen.getCollision(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
+        String victimCollege = "";
+        if (victim instanceof Ship) {
+            victimCollege = ((Ship) victim).getParentCollegeName();
+        } else if (victim instanceof College) {
+            victimCollege = ((College) victim).getCollegeName();
+        }
         // ... remove the College check for Ship collisions...
-        if(victim instanceof Ship && !(((Ship) victim).isPlayer()) && victim != this.attacker) {
-            victim.attack(100);
+        if (victim != null && victim != this.attacker && !(victim instanceof Weather) && !(victim instanceof Powerup)) {
+            if (this.attacker instanceof Ship && ((Ship) this.attacker).isPlayer() && !(Objects.equals(this.collegeName, victimCollege))) {
+                 boolean b = (victim instanceof Ship) ? victim.attack(100) : victim.attack(damage);
+            }
+            if (victim instanceof Ship && ((Ship) victim).isPlayer()) {
+                victim.attack(damage);
+            }
             cannonball.live = false;
             actor.remove();
             return true;
-        } /*
-        if (victim instanceof Ship) {
-            this.victimCollege = ((Ship) victim).getParentCollegeName();
-        } else if (victim instanceof College) {
-            this.victimCollege = ((College) victim).getCollegeName();
-        } */
-        if (victim != null && victim != this.attacker && !(victim instanceof Weather)) {
-            if (!Objects.equals(this.collegeName, this.victimCollege)) {
-                victim.attack(damage);
-                cannonball.live = false;
-                actor.remove();
-                return true;
-            }
+
         }
         cannonball.setPosition(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
         if (liveTime >= 1.5f) {
