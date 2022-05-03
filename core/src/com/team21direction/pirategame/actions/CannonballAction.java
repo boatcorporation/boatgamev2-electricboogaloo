@@ -4,21 +4,18 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.actors.*;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class CannonballAction extends Action {
     float liveTime = 0.0f;
     private final GameActor attacker;
-    private final College[] colleges;
-    private final Ship[] ships;
     private final String collegeName;
     private String victimCollege;
 
-    public CannonballAction(GameActor attacker, College[] colleges, Ship[] ships) {
+    public CannonballAction(GameActor attacker, College[] colleges, ArrayList<Ship> ships) {
         super();
         this.attacker = attacker;
-        this.colleges = colleges;
-        this.ships = ships;
         if (attacker instanceof Ship) {
             this.collegeName = ((Ship) attacker).getParentCollegeName();
         } else if (attacker instanceof College) {
@@ -42,8 +39,7 @@ public class CannonballAction extends Action {
         int damage = cannonball.getDamage();
         GameActor victim = cannonball.screen.getCollision(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
         // ... remove the College check for Ship collisions...
-        if(victim instanceof Ship && !(((Ship) victim).isPlayer())) {
-            System.out.println(Math.random());
+        if(victim instanceof Ship && !(((Ship) victim).isPlayer()) && victim != this.attacker) {
             victim.attack(100);
             cannonball.live = false;
             actor.remove();

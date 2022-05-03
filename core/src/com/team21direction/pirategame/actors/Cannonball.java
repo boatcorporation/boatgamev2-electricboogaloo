@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.team21direction.pirategame.actions.CannonballAction;
 import com.team21direction.pirategame.screens.MainScreen;
 
+import java.util.ArrayList;
+
 public class Cannonball extends GameActor {
     public final Vector2 direction = new Vector2();
 
@@ -18,7 +20,7 @@ public class Cannonball extends GameActor {
 
     public boolean live = true;
 
-    public Cannonball(MainScreen screen, float x, float y, Vector2 direction, GameActor attacker, College[] colleges, Ship[] ships) {
+    public Cannonball(MainScreen screen, float x, float y, Vector2 direction, GameActor attacker, College[] colleges, ArrayList<Ship> ships) {
         super(screen);
         this.attacker = attacker;
         this.setPosition(x, y);
