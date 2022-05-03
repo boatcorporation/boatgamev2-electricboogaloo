@@ -9,17 +9,17 @@ import com.team21direction.pirategame.screens.MainScreen;
 
 public class Obstacle extends GameActor {
 
-    private Texture texture;
-    private Sprite sprite;
+  private final Texture texture;
+  private final Sprite sprite;
 
-    public Obstacle(MainScreen screen) {
-        super(screen);
-        texture = new Texture(Gdx.files.internal("rock.png"));
-        sprite = new Sprite(texture);
-        this.radius = 100;
-    }
+  public Obstacle(MainScreen screen) {
+    super(screen);
+    texture = new Texture(Gdx.files.internal("rock.png"));
+    sprite = new Sprite(texture);
+    this.radius = 100;
+  }
 
-    public void draw(Batch batch, float parentAlpha) {
-        batch.draw(sprite, getX() - sprite.getWidth(), getY() - sprite.getHeight());
-    }
+  public void draw(Batch batch, float parentAlpha) {
+    batch.draw(sprite, getX() - sprite.getWidth(), getY() - sprite.getHeight());
+  }
 }

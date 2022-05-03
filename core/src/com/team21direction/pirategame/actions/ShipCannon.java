@@ -7,6 +7,11 @@ import com.team21direction.pirategame.actors.Ship;
 public class ShipCannon  extends Action {
     float timeSinceLastCannon = 0.0f;
 
+    /**
+     * Controls shooting of the cannons on NPC ships.
+     * @param delta the time since the last frame.
+     * @return whether the ship is still active. If the ship is dead, the action ceases.
+     */
     @Override
     public boolean act(float delta) {
         double random = Math.random();
