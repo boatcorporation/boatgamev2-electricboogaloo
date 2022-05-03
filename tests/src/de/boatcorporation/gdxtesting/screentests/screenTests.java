@@ -19,21 +19,21 @@ import com.badlogic.gdx.Game;
 
 
 
-@RunWith(GdxTestRunner.class)
-public class screenTests {
+// @RunWith(GdxTestRunner.class)
+// public class screenTests {
     
-    private static MainScreen screen;
-    private static PirateGame game;
+//     private static MainScreen screen;
+//     private static PirateGame game;
 
 
 
-    @BeforeClass
-    public static void init()
-    {
-        game = new PirateGame();
-        screen = new MainScreen(game, "normal");
+//     @BeforeClass
+//     public static void init()
+//     {
+//         game = new PirateGame();
+//         screen = new MainScreen(game, "normal");
 
-    }
+//     }
 
 
-}
+// }
