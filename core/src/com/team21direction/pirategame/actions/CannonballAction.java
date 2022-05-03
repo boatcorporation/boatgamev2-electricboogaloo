@@ -38,7 +38,7 @@ public class CannonballAction extends Action {
         int damage = cannonball.getDamage();
         GameActor victim = cannonball.screen.getCollision(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
         // ... remove the College check for Ship collisions...
-        if(victim instanceof Ship && !(((Ship) victim).isPlayer())) {
+        if(victim instanceof Ship && !(((Ship) victim).isPlayer()) && victim != this.attacker) {
             victim.attack(100);
             cannonball.live = false;
             actor.remove();
