@@ -18,6 +18,7 @@ public class Cannonball extends GameActor {
 
   public GameActor attacker;
 
+  // Whether the cannonball is currently active
   public boolean live = true;
 
   public Cannonball(
