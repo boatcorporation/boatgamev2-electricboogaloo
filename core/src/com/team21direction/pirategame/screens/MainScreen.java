@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.team21direction.pirategame.Interactables.Obstacle;
 import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.actors.*;
@@ -29,7 +30,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
 
-public class MainScreen implements Screen {
+public class
+MainScreen implements Screen {
 
     public final PirateGame game;
     private final Batch batch;
@@ -48,6 +50,7 @@ public class MainScreen implements Screen {
     private final OrthographicCamera camera;
 
     private final Weather[] weathers;
+    private final Obstacle[] obstacles;
     private final College[] colleges;
     private final ArrayList<Powerup> powerups;
     public final ArrayList<Ship> ships;
@@ -79,6 +82,7 @@ public class MainScreen implements Screen {
     private float timeSinceLastPowerup = 0.0f;
     private boolean isPoweredUp = false;
     private float timeSinceLastSave = 0.0f;
+    private float timeSinceLastCollision = 0.0f;
 
     private boolean isPlayingMusic = true;
     boolean isToggled = false;
@@ -129,6 +133,9 @@ public class MainScreen implements Screen {
                 new College(this, "Constantine", difficultyMultiplier),
                 new College(this, "Halifax", difficultyMultiplier),
         };
+
+
+
         weathers = new Weather[200];
         for(int i = 0; i < 200; i++) {
             weathers[i] = new Weather(this);
@@ -150,6 +157,15 @@ public class MainScreen implements Screen {
             stage.addActor(tempPowerup);
         }
 
+        obstacles = new Obstacle[50];
+        for(int i = 0; i < 50; i++) {
+            obstacles[i] = new Obstacle(this);
+            boolean success;
+            do {
+                success = obstacles[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+            } while (!success);
+            stage.addActor(obstacles[i]);
+        }
 
         ships = new ArrayList<>();
         for (College college : colleges) {
@@ -176,7 +192,6 @@ public class MainScreen implements Screen {
             success = player.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
         } while (!success);
         stage.addActor(player);
-        // send clouds to front so they're displayed on top of player
 
         shop = new Shop(shopBatch, player, this);
 
@@ -231,6 +246,15 @@ public class MainScreen implements Screen {
         }
     }
 
+    public Obstacle[] getObstacles() {return obstacles;}
+
+    public void setObstacles(Properties config) {
+        for (int i = 0; i < obstacles.length; i++) {
+            obstacles[i].setPosition(Float.parseFloat(config.get("obstacleX" + i).toString()),
+                    Float.parseFloat(config.get("obstacleY" + i).toString()));
+        }
+    }
+
     public void saveGame(MainScreen savedScreen, String fileName) {
         try (OutputStream output = new FileOutputStream(fileName)) {
             Properties config = new Properties();
@@ -277,6 +301,14 @@ public class MainScreen implements Screen {
                 powerIndex++;
             }
 
+            // Saves the position of each obstacle
+            int obstIndex = 0;
+            for (Obstacle obstacle : savedScreen.getObstacles()) {
+                config.put("obstacleX" + obstIndex, Float.toString(obstacle.getX()));
+                config.put("obstacleY" + obstIndex, Float.toString(obstacle.getY()));
+                obstIndex++;
+            }
+
             config.store(output, null);
 
         } catch (IOException ignored) {}
@@ -297,6 +329,7 @@ public class MainScreen implements Screen {
         timeSinceLastMusicToggle += delta;
         timeSinceLastPowerup += delta;
         timeSinceLastSave += delta;
+        timeSinceLastCollision += delta;
 
         GameActor collidingWith = getCollision(player.getX(), player.getY());
         if(collidingWith instanceof Weather) {
@@ -304,6 +337,13 @@ public class MainScreen implements Screen {
                 player.attack(1);
                 experience++;
                 timeSinceLastExpDrop = 0.0f;
+            }
+        }
+        if(collidingWith instanceof Obstacle) {
+            if(timeSinceLastCollision >= 2.0f) {
+                player.attack(25);
+                experience--;
+                timeSinceLastCollision = 0.0f;
             }
         }
         if(!isPoweredUp) {
@@ -471,6 +511,16 @@ public class MainScreen implements Screen {
                 if (powerup != null) {
                     if (powerup.collision(x, y)) {
                         return powerup;
+                    }
+                }
+            }
+        }
+
+        if(obstacles != null) {
+            for(Obstacle obstacle : obstacles) {
+                if (obstacle != null) {
+                    if(obstacle.collision(x,y)) {
+                        return obstacle;
                     }
                 }
             }
