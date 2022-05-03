@@ -191,7 +191,7 @@ public class AssetTests {
         "Speed" };
 		for (String f : files) {
 			assertTrue("the file " + f + ".png does not exist",
-					Gdx.files.internal("../core/powerups/" + f + ".png").exists());
+					Gdx.files.internal("../core/assets/powerups/" + f + ".png").exists());
 		}
     }
 
