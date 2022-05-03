@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.team21direction.pirategame.actors.GameActor;
+import com.team21direction.pirategame.actors.InteractableActor;
 import com.team21direction.pirategame.screens.MainScreen;
 
-public class Obstacle extends GameActor {
+public class Obstacle extends InteractableActor {
 
     private Texture texture;
     private Sprite sprite;

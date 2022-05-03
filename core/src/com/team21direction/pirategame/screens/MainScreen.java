@@ -399,7 +399,7 @@ MainScreen implements Screen {
         timeSinceLastSave += delta;
         timeSinceLastCollision += delta;
 
-        GameActor collidingWith = getCollision(player.getX(), player.getY());
+        InteractableActor collidingWith = getInteractableActorCollision(player.getX(), player.getY());
         if(collidingWith instanceof Weather) {
             if(timeSinceLastExpDrop >= 2.0f) {
                 player.attack(1);
@@ -576,25 +576,7 @@ MainScreen implements Screen {
 //        //pointer.setPosition(position.x, position.y);
 //    }
 
-    public GameActor getCollision(float x, float y) {
-        if (ships != null) {
-            for (Ship ship : ships) {
-                if (ship != null && ship.isActive()) {
-                    if (ship.collision(x, y)) {
-                        return ship;
-                    }
-                }
-            }
-        }
-
-        for (College college : colleges) {
-            if (college != null) {
-                if (college.collision(x, y)) {
-                    return college;
-                }
-            }
-        }
-
+    public InteractableActor getInteractableActorCollision(float x, float y) {
         for(Weather weather : weathers) {
             if (weather != null) {
                 if(weather.collision(x, y)) {
@@ -622,12 +604,27 @@ MainScreen implements Screen {
                 }
             }
         }
+        return null;
+    }
 
-//        for (Ship ship : ships) {
-//            if (ship != null)
-//                if (ship.collision(x, y))
-//                    return ship;
-//        }
+    public GameActor getGameActorCollision(float x, float y) {
+        if (ships != null) {
+            for (Ship ship : ships) {
+                if (ship != null && ship.isActive()) {
+                    if (ship.collision(x, y)) {
+                        return ship;
+                    }
+                }
+            }
+        }
+
+        for (College college : colleges) {
+            if (college != null) {
+                if (college.collision(x, y)) {
+                    return college;
+                }
+            }
+        }
 
         if (player != null) {
             if (player.collision(x, y)) {

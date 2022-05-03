@@ -6,9 +6,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.team21direction.pirategame.actors.GameActor;
+import com.team21direction.pirategame.actors.InteractableActor;
 import com.team21direction.pirategame.screens.MainScreen;
 
-public class Weather extends GameActor {
+public class Weather extends InteractableActor {
 
     private Texture weatherTexture;
     private Sprite weatherSprite;
