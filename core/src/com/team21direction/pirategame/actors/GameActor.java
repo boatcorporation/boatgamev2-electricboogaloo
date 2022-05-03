@@ -1,6 +1,7 @@
 package com.team21direction.pirategame.actors;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.team21direction.pirategame.Interactables.Obstacle;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.screens.MainScreen;
 
@@ -124,7 +125,8 @@ public class GameActor extends Actor {
             || this.x + deltaX <= -(PirateGame.WORLD_WIDTH / 2.0f)
             || this.y + deltaY >= PirateGame.WORLD_HEIGHT / 2.0f
             || this.y + deltaY <= -(PirateGame.WORLD_HEIGHT / 2.0f)
-            || screen.getCollision(this.x + deltaX, this.y + deltaY) instanceof College)
+            || screen.getCollision(this.x + deltaX, this.y + deltaY) instanceof College
+            || screen.getCollision(this.x + deltaX, this.y + deltaY) instanceof Obstacle)
             return false;
         this.x += deltaX;
         this.y += deltaY;
