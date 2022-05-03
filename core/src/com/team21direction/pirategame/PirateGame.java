@@ -28,7 +28,6 @@ public class PirateGame extends Game implements ApplicationListener {
 	@Override
 	public void create () {
 		titleScreen = new TitleScreen(this);
-		mainScreen = new MainScreen(this, "Normal");
 		winScreen = new WinScreen(this);
 		lossScreen = new LossScreen(this);
 

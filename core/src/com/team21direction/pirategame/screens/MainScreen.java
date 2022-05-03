@@ -1,9 +1,9 @@
 package com.team21direction.pirategame.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -22,15 +21,18 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.actors.*;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Properties;
 
 public class MainScreen implements Screen {
 
     public final PirateGame game;
     private final Batch batch;
     private final Batch shopBatch;
-    private final Batch weatherBatch;
 
     protected Stage stage;
     protected Stage weatherStage;
@@ -40,13 +42,13 @@ public class MainScreen implements Screen {
     private final BitmapFont font;
     private final Music music;
     private final Sound cannonballSound;
-    private Shop shop;
+    private final Shop shop;
 
     private final OrthographicCamera camera;
 
     private final Weather[] weathers;
     private final College[] colleges;
-    public final Ship[] ships;
+    public final ArrayList<Ship> ships;
     public final Ship player;
     private final Vector2 position = new Vector2();
     private final Vector2 cannonball_velocity = new Vector2();
@@ -57,7 +59,6 @@ public class MainScreen implements Screen {
     private float timeSinceLastCannon = 0.0f;
 
     public int experience = 0;
-    public int gold = 0;
 
     /**
      * Amount of experience gained when taking over a College.
@@ -72,14 +73,16 @@ public class MainScreen implements Screen {
     private float timeSinceLastExpDrop = 0.0f;
     private float timeSinceLastMusicToggle = 0.0f;
     private float timeSinceLastShopToggle = 0.0f;
+    private float timeSinceLastSave = 0.0f;
 
     private boolean isPlayingMusic = true;
     boolean isToggled = false;
 
 
-    private double difficultyMultiplier = 1;
+    private final String difficulty;
 
     public MainScreen(PirateGame game, String difficulty) {
+        this.difficulty = difficulty;
         this.game = game;
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
@@ -90,7 +93,7 @@ public class MainScreen implements Screen {
 
         batch = new SpriteBatch();
         shopBatch = new SpriteBatch();
-        weatherBatch = new SpriteBatch();
+        Batch weatherBatch = new SpriteBatch();
 
         viewport = new FitViewport(2670, 2000, camera);
         viewport.apply();
@@ -104,9 +107,10 @@ public class MainScreen implements Screen {
 
         cannonballSound = Gdx.audio.newSound(Gdx.files.internal("cannonball.mp3"));
 
-        if (difficulty == "Easy") {
+        double difficultyMultiplier = 1;
+        if (Objects.equals(this.difficulty, "Easy")) {
             difficultyMultiplier = 0.5;
-        } else if (difficulty == "Hard") {
+        } else if (Objects.equals(this.difficulty, "Hard")) {
             difficultyMultiplier = 2;
         }
 
@@ -131,20 +135,21 @@ public class MainScreen implements Screen {
         }
 
 
-        ships = new Ship[PirateGame.SHIPS_PER_COLLEGE * colleges.length];
-        for (int i = 0; i < colleges.length; i++) {
+        ships = new ArrayList<>();
+        for (College college : colleges) {
             boolean success;
             do {
-                success = colleges[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+                success = college.move((float) (Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float) (Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
             } while (!success);
 
-            stage.addActor(colleges[i]);
+            stage.addActor(college);
             for (int j = 0; j < PirateGame.SHIPS_PER_COLLEGE; j++) {
-                ships[i + j] = new Ship(this, colleges[i], difficultyMultiplier);
+                Ship tempShip = new Ship(this, college, difficultyMultiplier);
+                ships.add(tempShip);
                 do {
-                    success = ships[i + j].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+                    success = tempShip.move((float) (Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float) (Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
                 } while (!success);
-                stage.addActor(ships[i + j]);
+                stage.addActor(tempShip);
             }
         }
 
@@ -163,6 +168,84 @@ public class MainScreen implements Screen {
 
     }
 
+    public String getDifficulty() { return difficulty; }
+
+    public void setExperience(int experience) { this.experience = experience; }
+
+    public Weather[] getWeather() { return weathers; }
+
+    public void setWeather(Properties config) {
+        for (int i = 0; i < weathers.length; i++) {
+            weathers[i].setPosition(Float.parseFloat(config.get("weatherX" + i).toString()),
+                    Float.parseFloat(config.get("weatherY" + i).toString()));
+        }
+    }
+
+    public College[] getColleges() { return colleges; }
+
+    public void setColleges(Properties config) {
+        for (int i = 0; i < colleges.length; i++) {
+            colleges[i].setPosition(Float.parseFloat(config.get("collegeX" + i).toString()),
+                    Float.parseFloat(config.get("collegeY" + i).toString()));
+            colleges[i].setHealth(Integer.parseInt(config.get("collegeH" + i).toString()));
+        }
+    }
+
+    public ArrayList<Ship> getShips() { return ships; }
+
+    public void setShips(Properties config) {
+        int count = 0;
+        for (Ship ship : ships) {
+            ship.setPosition(Float.parseFloat(config.get("shipX" + count).toString()),
+                    Float.parseFloat(config.get("shipY" + count).toString()));
+            ship.setHealth((int) Float.parseFloat(config.get("shipH" + count).toString()));
+            count++;
+        }
+    }
+
+    public void saveGame(MainScreen savedScreen, String fileName) {
+        try (OutputStream output = new FileOutputStream(fileName)) {
+            Properties config = new Properties();
+
+            config.put("Difficulty", savedScreen.getDifficulty());
+            config.put("Gold", Integer.toString(savedScreen.player.getGold()));
+            config.put("Health", Integer.toString(savedScreen.player.getHealth()));
+            config.put("Exp", Integer.toString(savedScreen.experience));
+            config.put("x", Float.toString(savedScreen.player.getX()));
+            config.put("y", Float.toString(savedScreen.player.getY()));
+
+            // Saves the position of each weather item
+            int weatherIndex = 0;
+            for (Weather weather : savedScreen.getWeather()) {
+                config.put("weatherX" + weatherIndex, Float.toString(weather.getX()));
+                config.put("weatherY" + weatherIndex, Float.toString(weather.getY()));
+                weatherIndex++;
+            }
+
+            // Saves the position and health of each college
+            int collegeIndex = 0;
+            for (College college : savedScreen.getColleges()) {
+                config.put("collegeX" + collegeIndex, Float.toString(college.getX()));
+                config.put("collegeY" + collegeIndex, Float.toString(college.getY()));
+                config.put("collegeH" + collegeIndex, Integer.toString(college.getHealth()));
+                collegeIndex++;
+            }
+
+            // Saves the position and health of each ship
+            int shipIndex = 0;
+            for (Ship ship : savedScreen.getShips()) {
+                config.put("shipX" + shipIndex, Float.toString(ship.getX()));
+                config.put("shipY" + shipIndex, Float.toString(ship.getY()));
+                config.put("shipH" + shipIndex, Float.toString(ship.getHealth()));
+                shipIndex++;
+            }
+
+            config.store(output, null);
+
+        } catch (IOException ignored) {}
+        System.out.println("Saved!");
+    }
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(new InputMultiplexer(stage, shop.getStage()));
@@ -175,6 +258,7 @@ public class MainScreen implements Screen {
         timeSinceLastCannon += delta;
         timeSinceLastExpDrop += delta;
         timeSinceLastMusicToggle += delta;
+        timeSinceLastSave += delta;
 
         GameActor collidingWith = getCollision(player.getX(), player.getY());
         if(collidingWith instanceof Weather) {
@@ -230,7 +314,7 @@ public class MainScreen implements Screen {
             if (!college.isActive() && !college.isConquered()) {
                 for (Ship ship : ships) {
                     if (ship != null) {
-                        if (ship.getParentCollegeName() == college.getCollegeName()) {
+                        if (Objects.equals(ship.getParentCollegeName(), college.getCollegeName())) {
                             ship.setCollege(player.getParentCollege());
                         }
                     }
@@ -248,7 +332,7 @@ public class MainScreen implements Screen {
         }
         if (!collegeActive) {
             // all colleges are no longer active -- game over
-            game.setScreen(game.winScreen);
+            this.game.setScreen(this.game.winScreen);
         }
     }
 
@@ -305,7 +389,7 @@ public class MainScreen implements Screen {
     public GameActor getCollision(float x, float y) {
         if (ships != null) {
             for (Ship ship : ships) {
-                if (ship != null) {
+                if (ship != null && ship.isActive()) {
                     if (ship.collision(x, y)) {
                         return ship;
                     }
@@ -329,11 +413,6 @@ public class MainScreen implements Screen {
             }
         }
 
-//        for (Ship ship : ships) {
-//            if (ship != null)
-//                if (ship.collision(x, y))
-//                    return ship;
-//        }
         if (player != null) {
             if (player.collision(x, y)) {
                 return player;
@@ -400,7 +479,24 @@ public class MainScreen implements Screen {
             fireCannon(player, cannonball_velocity);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) game.setScreen(game.titleScreen);
+        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1) && timeSinceLastSave >= 1.0f) {
+            timeSinceLastSave = 0.0f;
+            this.saveGame(this, "save1.properties");
+        } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2) && timeSinceLastSave >= 1.0f) {
+            timeSinceLastSave = 0.0f;
+            this.saveGame(this, "save2.properties");
+        } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3) && timeSinceLastSave >= 1.0f) {
+            timeSinceLastSave = 0.0f;
+            this.saveGame(this, "save3.properties");
+        } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_4) && timeSinceLastSave >= 1.0f) {
+            timeSinceLastSave = 0.0f;
+            this.saveGame(this, "save4.properties");
+        } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_5) && timeSinceLastSave >= 1.0f) {
+            timeSinceLastSave = 0.0f;
+            this.saveGame(this, "save5.properties");
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) { this.game.setScreen(this.game.titleScreen); }
 
         if (Gdx.input.isKeyPressed(Input.Keys.M) && timeSinceLastMusicToggle >= 0.5f) {
             timeSinceLastMusicToggle = 0.0f;
