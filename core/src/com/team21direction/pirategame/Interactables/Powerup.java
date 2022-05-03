@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Random;
 
 public class Powerup extends GameActor {
+
     public enum Type {Speed, Health, Invisible, Experience, Gold}
     public Type type;
-    private List<Type> types;
     private Texture speedTexture;
     private Sprite speedSprite;
 
@@ -28,6 +28,12 @@ public class Powerup extends GameActor {
 
     public Type getType() {
         return this.type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+        speedTexture = new Texture(Gdx.files.internal("powerups/" + this.type.toString() + ".png"));
+        speedSprite = new Sprite(speedTexture);
     }
 
     public void draw(Batch batch, float parentAlpha) {
