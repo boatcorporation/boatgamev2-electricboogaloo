@@ -3,15 +3,16 @@ package com.team21direction.pirategame.actors;
 import com.team21direction.pirategame.screens.MainScreen;
 
 public class GameActor extends InteractableActor {
+  // the damage that the actor outputs
   private static int damage = 10;
+  // a difficulty multiplier, adds a multiplier to certain things based on difficulty selected
   protected double diffMult;
   private int maxHealth = 100;
   private int health = maxHealth;
-    private boolean invulnerable = false;
+  private boolean invulnerable = false;
 
-
-    public GameActor(MainScreen screen) {
-        super(screen);
+  public GameActor(MainScreen screen) {
+    super(screen);
   }
 
   /**
@@ -35,7 +36,7 @@ public class GameActor extends InteractableActor {
   /**
    * Sets the health to a certain parameter
    *
-   * @param health the value of the health of the player after completion.
+   * @param health the value of the health of the actor after completion.
    */
   public void setHealth(int health) {
     this.health = health;
@@ -51,7 +52,7 @@ public class GameActor extends InteractableActor {
   }
 
   /**
-   * Sets the difficulty of the game (sets the players health)
+   * Sets the difficulty of the game (sets the actors health)
    *
    * @param maxHealth the maxHealth wanted depending on difficulty.
    */
@@ -73,9 +74,9 @@ public class GameActor extends InteractableActor {
   }
 
   /**
-   * Get the damage the college will do to the player (defence).
+   * Get the damage the college will do to the actor (defence).
    *
-   * @return the damage to apply to the player.
+   * @return the damage to apply to the actor.
    */
   public int getDamage() {
     return damage;
@@ -90,8 +91,21 @@ public class GameActor extends InteractableActor {
     damage += delta;
   }
 
-    public boolean isInvulnerable() { return invulnerable; }
+  /**
+   * Returns whether the actor is invulnerable.
+   *
+   * @return true if invulnerable, false otherwise.
+   */
+  public boolean isInvulnerable() {
+    return invulnerable;
+  }
 
-    public void setInvulnerable(boolean invulnerable) { this.invulnerable = invulnerable; }
-
+  /**
+   * Sets the actors invulerability status
+   *
+   * @param invulnerable true or false, depending on the status required
+   */
+  public void setInvulnerable(boolean invulnerable) {
+    this.invulnerable = invulnerable;
+  }
 }
