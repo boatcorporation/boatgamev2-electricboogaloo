@@ -18,9 +18,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.actors.*;
-
+import com.team21direction.pirategame.Interactables.Powerup;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,7 +49,9 @@ public class MainScreen implements Screen {
 
     private final Weather[] weathers;
     private final College[] colleges;
+    private final Powerup[] powerups;
     public final ArrayList<Ship> ships;
+
     public final Ship player;
     private final Vector2 position = new Vector2();
     private final Vector2 cannonball_velocity = new Vector2();
@@ -73,6 +76,8 @@ public class MainScreen implements Screen {
     private float timeSinceLastExpDrop = 0.0f;
     private float timeSinceLastMusicToggle = 0.0f;
     private float timeSinceLastShopToggle = 0.0f;
+    private float timeSinceLastPowerup = 0.0f;
+    private boolean isPoweredUp = false;
     private float timeSinceLastSave = 0.0f;
 
     private boolean isPlayingMusic = true;
@@ -132,6 +137,16 @@ public class MainScreen implements Screen {
                 success = weathers[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
             } while (!success);
             weatherStage.addActor(weathers[i]);
+        }
+
+        powerups = new Powerup[15];
+        for(int i = 0; i < 15; i++) {
+            powerups[i] = new Powerup(this);
+            boolean success;
+            do {
+                success = powerups[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+            } while (!success);
+            stage.addActor(powerups[i]);
         }
 
 
@@ -258,6 +273,7 @@ public class MainScreen implements Screen {
         timeSinceLastCannon += delta;
         timeSinceLastExpDrop += delta;
         timeSinceLastMusicToggle += delta;
+        timeSinceLastPowerup += delta;
         timeSinceLastSave += delta;
 
         GameActor collidingWith = getCollision(player.getX(), player.getY());
@@ -268,6 +284,21 @@ public class MainScreen implements Screen {
                 timeSinceLastExpDrop = 0.0f;
             }
         }
+        if(!isPoweredUp) {
+            if (collidingWith instanceof Powerup) {
+                isPoweredUp = true;
+                collidingWith.remove();
+                player.applyPowerup((Powerup)collidingWith);
+                timeSinceLastPowerup = 0;
+            }
+        } else {
+            if(timeSinceLastPowerup > 2.0f) {
+                isPoweredUp = false;
+                player.removePowerup();
+            }
+        }
+
+
 
         if (timeSinceLastExpDrop >= 10.0f) {
             timeSinceLastExpDrop = 0.0f;
@@ -413,6 +444,22 @@ public class MainScreen implements Screen {
             }
         }
 
+        if(powerups != null) {
+            for (Powerup powerup : powerups) {
+                if (powerup != null) {
+                    if (powerup.collision(x, y)) {
+                        return powerup;
+                    }
+                }
+            }
+        }
+
+//        for (Ship ship : ships) {
+//            if (ship != null)
+//                if (ship.collision(x, y))
+//                    return ship;
+//        }
+
         if (player != null) {
             if (player.collision(x, y)) {
                 return player;
@@ -425,8 +472,8 @@ public class MainScreen implements Screen {
 
     public void update_keyboard() {
 
-        float speedl = 4f + experience / 10f;
-        float speedd = 2.83f + experience / 20f;
+        float speedl = player.getSpeedl();
+        float speedd = player.getSpeedd();
 
 
 

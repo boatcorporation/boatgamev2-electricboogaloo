@@ -42,6 +42,8 @@ public class GameActor extends Actor {
         this.health = health;
     }
 
+    public void addHealth(int health) { this.health += health;}
+
     public void setDifficulty(int maxHealth) {
         this.maxHealth = maxHealth;
         this.health = maxHealth;
