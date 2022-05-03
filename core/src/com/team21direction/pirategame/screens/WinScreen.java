@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
 
+/**
+ * Screen displayed upon game victory.
+ */
 public class WinScreen implements Screen {
   private final PirateGame game;
   private final Viewport viewport;

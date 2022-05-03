@@ -1,4 +1,4 @@
-package com.team21direction.pirategame.Interactables;
+package com.team21direction.pirategame.interactables;
 
 import com.team21direction.pirategame.actors.College;
 import com.team21direction.pirategame.actors.Ship;
@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Objective {
+
   private String display;
   private Type type;
   private int goalNum = -1;
@@ -18,6 +19,12 @@ public class Objective {
   private int startXP;
   private int startShips;
   private boolean finalObjective;
+
+  /**
+   * Instantiate the objective class.
+   * @param colleges an array of all remaining colleges.
+   * @param finalObjective whether this is the final objective or not
+   */
   public Objective(College[] colleges, boolean finalObjective) {
     this.active = true;
     this.finalObjective = finalObjective;
@@ -57,6 +64,13 @@ public class Objective {
     }
   }
 
+  /**
+   * Starts tracking the current objective
+   *
+   * @param player the player ship
+   * @param ships a list of all ships.
+   * @param screen the screen.
+   */
   public void startTracking(Ship player, ArrayList<Ship> ships, MainScreen screen) {
     startGold = player.getGold();
     startXP = screen.experience;
@@ -67,10 +81,20 @@ public class Objective {
     }
   }
 
+  /**
+   * Gets the type of objective
+   *
+   * @return the type of the current objective
+   */
   public Type getType() {
     return this.type;
   }
 
+  /**
+   * Sets the type of the objective.
+   *
+   * @param type the type of the objective to become the current objective.
+   */
   public void setType(String type) {
     switch (type) {
       case "ObtainXP":
@@ -155,6 +179,14 @@ public class Objective {
     this.active = active;
   }
 
+  /**
+   * Checks whether the goal for the objective is complete.
+   *
+   * @param player the player ship
+   * @param ships a list of all ships
+   * @param colleges an array of all colleges.
+   * @param screen the screen
+   */
   public void checkActive(
       Ship player, ArrayList<Ship> ships, College[] colleges, MainScreen screen) {
     switch (this.getType()) {

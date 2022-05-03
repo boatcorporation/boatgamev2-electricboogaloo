@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.team21direction.pirategame.PirateGame;
 
+/**
+ * Screen displayed when the game is lost, with options to return to main menu or exit.
+ */
 public class LossScreen implements Screen {
   private final PirateGame game;
   private final Viewport viewport;

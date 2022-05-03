@@ -5,6 +5,9 @@ import com.team21direction.pirategame.actors.Ship;
 
 import java.util.Random;
 
+/**
+ * Controls the movement of each NPC ship randomly every frame.
+ */
 public class MoveRandomly extends Action {
   static float maxSpeed = 7.0f;
 
@@ -12,11 +15,11 @@ public class MoveRandomly extends Action {
   Ship.Direction direction = null;
 
   /**
-   * Move each NPC ship randomly every frame.
+   * Act the random movements
    *
-   * @param delta the time since the last frame.
-   * @return whether the ship is active (hence, if false, the action should cease executing on that
-   *     ship).
+   * @param delta the time since the last frame
+   * @return whether the ship is active * (hence, if false, the action should cease executing on that
+   *     * ship).
    */
   @Override
   public boolean act(float delta) {

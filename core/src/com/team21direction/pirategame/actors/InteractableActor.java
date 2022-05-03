@@ -1,17 +1,25 @@
 package com.team21direction.pirategame.actors;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.team21direction.pirategame.Interactables.Obstacle;
+import com.team21direction.pirategame.interactables.Obstacle;
 import com.team21direction.pirategame.PirateGame;
 import com.team21direction.pirategame.screens.MainScreen;
 
 public class InteractableActor extends Actor {
   public MainScreen screen;
+  // the radius of the actor, used for collision purposes
   protected float radius;
   private boolean isActive = true;
+
+  // x and y co-ordinate of the actor on the screen.
   private float x = 0.0f;
   private float y = 0.0f;
 
+  /**
+   * Instantiate the actor and register what screen they are assigned to
+   *
+   * @param screen the screen for the actor to be displayed on
+   */
   public InteractableActor(MainScreen screen) {
     this.screen = screen;
   }
@@ -43,6 +51,11 @@ public class InteractableActor extends Actor {
     return isActive;
   }
 
+  /**
+   * Sets the current active status of the actor
+   *
+   * @param active
+   */
   public void setActive(boolean active) {
     this.isActive = active;
   }

@@ -8,6 +8,7 @@ import com.team21direction.pirategame.actions.FireCannon;
 import com.team21direction.pirategame.actions.WhiteFlagRoutine;
 import com.team21direction.pirategame.screens.MainScreen;
 
+
 public class College extends GameActor {
   private final Texture[] collegeBases;
   public Sprite collegeBase;
@@ -45,6 +46,11 @@ public class College extends GameActor {
     return this.name;
   }
 
+  /**
+   * Sets the name of the college. This also changes the college's sprite.
+   *
+   * @param name the new name of the college
+   */
   public void setCollegeName(String name) {
     this.name = name;
     collegeBase =
@@ -52,10 +58,20 @@ public class College extends GameActor {
             new Texture(Gdx.files.internal("colleges/" + this.name + "-college-fullhealth.png")));
   }
 
+  /**
+   * Get whether the college is conquered
+   *
+   * @return true if conquered, false otherwise.
+   */
   public boolean isConquered() {
     return this.conquered;
   }
 
+  /**
+   * Set whether the college is conquered or not.
+   *
+   * @param conquered true if conquered, false if not.
+   */
   public void setConquered(boolean conquered) {
     this.conquered = conquered;
   }
