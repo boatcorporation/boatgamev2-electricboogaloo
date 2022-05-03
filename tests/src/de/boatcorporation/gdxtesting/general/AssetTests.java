@@ -182,4 +182,17 @@ public class AssetTests {
 		}
     }
 
+    @Test
+    public void PowerUpsExists(){
+        String[] files = { "Experience",
+        "Gold",
+        "Health",
+        "Invisible",
+        "Speed" };
+		for (String f : files) {
+			assertTrue("the file " + f + ".png does not exist",
+					Gdx.files.internal("../core/powerups/" + f + ".png").exists());
+		}
+    }
+
 }

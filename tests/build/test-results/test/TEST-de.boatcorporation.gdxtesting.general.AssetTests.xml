@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="de.boatcorporation.gdxtesting.general.AssetTests" tests="1" skipped="0" failures="1" errors="0" timestamp="2022-05-02T15:14:59" hostname="Charlottes-MacBook-Pro.local" time="0.008">
+<testsuite name="de.boatcorporation.gdxtesting.general.AssetTests" tests="14" skipped="0" failures="0" errors="0" timestamp="2022-05-02T17:08:44" hostname="Charlottes-MacBook-Pro.local" time="0.235">
   <properties/>
-  <testcase name="WeatherExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.008">
-    <failure message="java.lang.AssertionError: the file weather.png does not exist" type="java.lang.AssertionError">java.lang.AssertionError: the file weather.png does not exist
-	at org.junit.Assert.fail(Assert.java:89)
-	at org.junit.Assert.assertTrue(Assert.java:42)
-	at de.boatcorporation.gdxtesting.general.AssetTests.WeatherExists(AssetTests.java:20)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at de.boatcorporation.gdxtesting.GdxTestRunner.render(GdxTestRunner.java:59)
-	at com.badlogic.gdx.backends.headless.HeadlessApplication.mainLoop(HeadlessApplication.java:128)
-	at com.badlogic.gdx.backends.headless.HeadlessApplication$1.run(HeadlessApplication.java:94)
-</failure>
-  </testcase>
+  <testcase name="MusicExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.006"/>
+  <testcase name="AtlasExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.0"/>
+  <testcase name="VanbrughShipExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.0"/>
+  <testcase name="OggSoundsExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.0"/>
+  <testcase name="ConstantineShipExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.001"/>
+  <testcase name="DerwentShipExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.001"/>
+  <testcase name="MiscPngExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.001"/>
+  <testcase name="CollegeDefeatExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.0"/>
+  <testcase name="HalifaxShipExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.001"/>
+  <testcase name="FontExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.0"/>
+  <testcase name="CollegeExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.001"/>
+  <testcase name="WeatherExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.001"/>
+  <testcase name="LangwithShipExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.002"/>
+  <testcase name="JsonExists" classname="de.boatcorporation.gdxtesting.general.AssetTests" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
