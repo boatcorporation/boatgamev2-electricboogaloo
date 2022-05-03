@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.team21direction.pirategame.Interactables.Objective;
 import com.team21direction.pirategame.Interactables.Obstacle;
 import com.team21direction.pirategame.Interactables.Weather;
 import com.team21direction.pirategame.PirateGame;
@@ -54,6 +56,9 @@ MainScreen implements Screen {
     private final College[] colleges;
     private final ArrayList<Powerup> powerups;
     public final ArrayList<Ship> ships;
+    public final ArrayList<Objective> objectives;
+    public final String finalBoss;
+    public final String replacement;
 
     public final Ship player;
     private final Vector2 position = new Vector2();
@@ -75,6 +80,7 @@ MainScreen implements Screen {
      * Amount of gold gained when razing a College.
      */
     public int goldPerCollege = 10;
+    public int goldPerShip = 5;
 
     private float timeSinceLastExpDrop = 0.0f;
     private float timeSinceLastMusicToggle = 0.0f;
@@ -127,7 +133,7 @@ MainScreen implements Screen {
         weatherStage = new Stage(viewport, weatherBatch);
 
 
-        colleges = new College[] {
+        colleges = new College[]{
                 new College(this, "Derwent", difficultyMultiplier),
                 new College(this, "Langwith", difficultyMultiplier),
                 new College(this, "Constantine", difficultyMultiplier),
@@ -137,22 +143,22 @@ MainScreen implements Screen {
 
 
         weathers = new Weather[200];
-        for(int i = 0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             weathers[i] = new Weather(this);
             boolean success;
             do {
-                success = weathers[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+                success = weathers[i].move((float) (Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float) (Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
             } while (!success);
             weatherStage.addActor(weathers[i]);
         }
 
         powerups = new ArrayList<>();
-        for(int i = 0; i < 15; i++) {
+        for (int i = 0; i < 15; i++) {
             Powerup tempPowerup = new Powerup(this);
             powerups.add(tempPowerup);
             boolean success;
             do {
-                success = tempPowerup.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+                success = tempPowerup.move((float) (Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float) (Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
             } while (!success);
             stage.addActor(tempPowerup);
         }
@@ -185,16 +191,41 @@ MainScreen implements Screen {
             }
         }
 
-
-        player = new Ship(this, new College(this,"Vanbrugh", difficultyMultiplier), true, difficultyMultiplier);
+        player = new Ship(this, new College(this, "Vanbrugh", difficultyMultiplier), true, difficultyMultiplier);
         boolean success;
         do {
-            success = player.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+            success = player.move((float) (Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float) (Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
         } while (!success);
         stage.addActor(player);
 
         shop = new Shop(shopBatch, player, this);
 
+        objectives = new ArrayList<>();
+        double numObj = 4 * difficultyMultiplier;
+        int intObj = (int) numObj;
+        int shipObjs;
+        do {
+            objectives.clear();
+            shipObjs = 0;
+            for (int i = 0; i < intObj; i++) {
+                Objective tempObj = new Objective(colleges, false);
+                if (Objective.Type.HaveShips == tempObj.getType()) {
+                    shipObjs++;
+                }
+                objectives.add(tempObj);
+            }
+        } while (shipObjs > 3);
+
+        objectives.add(new Objective(colleges, true));
+        finalBoss = objectives.get(objectives.size() - 1).getToDestroy();
+        for (College college : colleges) {
+            if (Objects.equals(college.getCollegeName(), finalBoss)) {
+                college.setInvulnerable(true);
+                break;
+            }
+        }
+        replacement = objectives.get(objectives.size() - 1).getDisplay().substring(0,objectives.get(objectives.size() - 1).getDisplay().length() - 15);
+        objectives.get(0).startTracking(player, ships, this);
 
 
     }
@@ -246,12 +277,32 @@ MainScreen implements Screen {
         }
     }
 
+
+    public ArrayList<Objective> getObjectives() { return objectives; }
+
+    public void setObjectives(Properties config) {
+        int count = 0;
+        for (Objective objective : objectives) {
+            objective.setActive(Boolean.parseBoolean(config.get("objActive" + count).toString()));
+            objective.setType(config.get("objType" + count).toString());
+            objective.setFinalObjective(Boolean.parseBoolean(config.get("objFinal" + count).toString()));
+            objective.setGoalNum(Integer.parseInt(config.get("objGoal" + count).toString()));
+            objective.setToDestroy(config.get("objDestroy" + count).toString());
+            objective.setStartGold(Integer.parseInt(config.get("objGold" + count).toString()));
+            objective.setStartXP(Integer.parseInt(config.get("objXP" + count).toString()));
+            objective.setStartShips(Integer.parseInt(config.get("objShips" + count).toString()));
+            objective.setDisplay(config.get("objDisplay" + count).toString());
+            count++;
+        }
+    }
+
     public Obstacle[] getObstacles() {return obstacles;}
 
     public void setObstacles(Properties config) {
         for (int i = 0; i < obstacles.length; i++) {
             obstacles[i].setPosition(Float.parseFloat(config.get("obstacleX" + i).toString()),
                     Float.parseFloat(config.get("obstacleY" + i).toString()));
+
         }
     }
 
@@ -301,12 +352,29 @@ MainScreen implements Screen {
                 powerIndex++;
             }
 
+
+            //Saves each objective
+            int objIndex = 0;
+            for (Objective objective : savedScreen.getObjectives()) {
+                config.put("objActive" + objIndex, Boolean.toString(objective.isActive()));
+                config.put("objType" + objIndex, objective.getType().toString());
+                config.put("objFinal" + objIndex, Boolean.toString(objective.isFinalObjective()));
+                config.put("objGoal" + objIndex, Integer.toString(objective.getGoalNum()));
+                config.put("objDestroy" + objIndex, objective.getToDestroy());
+                config.put("objGold" + objIndex, Integer.toString(objective.getStartGold()));
+                config.put("objXP" + objIndex, Integer.toString(objective.getStartXP()));
+                config.put("objShips" + objIndex, Integer.toString(objective.getStartShips()));
+                config.put("objDisplay" + objIndex, objective.getDisplay());
+                objIndex++;
+            }
+
             // Saves the position of each obstacle
             int obstIndex = 0;
             for (Obstacle obstacle : savedScreen.getObstacles()) {
                 config.put("obstacleX" + obstIndex, Float.toString(obstacle.getX()));
                 config.put("obstacleY" + obstIndex, Float.toString(obstacle.getY()));
                 obstIndex++;
+
             }
 
             config.store(output, null);
@@ -397,10 +465,51 @@ MainScreen implements Screen {
             shop.getStage().act(delta);
         }
 
+        for (int i = 0; i < objectives.size(); i++) {
+            if (objectives.get(i).isActive()) {
+                objectives.get(i).checkActive(player, ships, colleges, this);
+                if (!(objectives.get(i).isActive())) {
+                    if (i == objectives.size() - 1) {
+                        // No objectives left; The player wins
+                        this.game.setScreen(this.game.winScreen);
+                    } else if (i == objectives.size() - 2) {
+                        // Final objective
+                        objectives.get(objectives.size() - 1).setFinalObjective(false);
+                        objectives.get(objectives.size() - 1).setDisplay(replacement);
+                        for (College college : colleges) {
+                            if (Objects.equals(college.getCollegeName(), finalBoss)) {
+                                college.setInvulnerable(false);
+                                break;
+                            }
+                        }
+                    } else {
+                        objectives.get(i+1).startTracking(player, ships, this);
+                    }
+                }
+                break;
+            }
+        }
+
         batch.begin();
         font.draw(batch, "Health: " + player.getHealth() + " / " + player.getMaxHealth(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2);
         font.draw(batch, "Exp: " + experience, camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight());
         font.draw(batch, "Gold: " + player.getGold(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 2);
+        font.draw(batch, "", camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 3);
+        font.draw(batch, "Objectives: ", camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * 4);
+        int activeObjs = 0;
+        for (Objective objective : objectives) {
+            if (objective.isActive()) {
+                if (objective.isFinalObjective()) {
+                    font.setColor(Color.RED);
+                    font.draw(batch, objective.getDisplay(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * (activeObjs + 5));
+                    font.setColor(Color.WHITE);
+                } else {
+                    font.setColor(Color.WHITE);
+                    font.draw(batch, objective.getDisplay(), camera.position.x - camera.viewportWidth / 2, camera.position.y + camera.viewportHeight / 2 - font.getLineHeight() * (activeObjs + 5));
+                }
+                activeObjs++;
+            }
+        }
         batch.end();
 
         for (College college : colleges) {
@@ -414,18 +523,6 @@ MainScreen implements Screen {
                 }
                 college.setConquered(true);
              }
-        }
-
-        boolean collegeActive = false;
-        for (College college : colleges) {
-            if (college.isActive()) {
-                collegeActive = true;
-                break;
-            }
-        }
-        if (!collegeActive) {
-            // all colleges are no longer active -- game over
-            this.game.setScreen(this.game.winScreen);
         }
     }
 

@@ -20,10 +20,11 @@ public class Ship extends GameActor {
 
     private HashMap<Direction, Texture> textures;
     private Sprite texture;
-    private ShipCannon cannon;
+    private final ShipCannon cannon;
 
     private final boolean isPlayer;
     private int gold;
+    private String currentPow;
 
     private float speedl;
     private float speedd;
@@ -100,21 +101,23 @@ public class Ship extends GameActor {
 
         texture = new Sprite(textures.get(direction));
         this.removeAction(this.cannon);
+        screen.addGold(screen.goldPerShip);
     }
 
     @Override
     public boolean attack(int damage) {
         super.attack(damage);
-        if (isPlayer && !isActive()) {
-            // game over
-            screen.game.setScreen(screen.game.lossScreen);
+        if (!isActive()) {
+            if (isPlayer) {
+                screen.game.setScreen(screen.game.lossScreen);
+            }
+            screen.addGold(screen.goldPerShip);
         }
         return isActive();
     }
 
     public void applyPowerup(Powerup powerup) {
-        System.out.println("Powerup");
-        System.out.println(powerup.getType());
+        currentPow = powerup.getType().toString();
         switch(powerup.getType()) {
             case Speed:
                 this.speedd = (2.83f + screen.experience / 20f) * 2;
@@ -136,11 +139,14 @@ public class Ship extends GameActor {
     }
 
     public void removePowerup() {
-        System.out.println("Removed");
-
         this.speedl = 4f + screen.experience / 10f;
         this.speedd = 2.83f + screen.experience / 20f;
         this.setVisible(true);
+        currentPow = "";
+    }
+
+    public String getCurrentPow() {
+        return currentPow;
     }
 
     public int getGold() {

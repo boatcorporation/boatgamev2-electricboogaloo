@@ -46,7 +46,13 @@ public class CannonballAction extends Action {
         // ... remove the College check for Ship collisions...
         if (victim != null && victim != this.attacker && !(victim instanceof Weather) && !(victim instanceof Powerup)) {
             if (this.attacker instanceof Ship && ((Ship) this.attacker).isPlayer() && !(Objects.equals(this.collegeName, victimCollege))) {
-                 boolean b = (victim instanceof Ship) ? victim.attack(100) : victim.attack(damage);
+                 if (victim instanceof Ship) {
+                     victim.attack(100);
+                 } else {
+                     if (!victim.isInvulnerable()) {
+                         victim.attack(damage);
+                     }
+                 }
             }
             if (victim instanceof Ship && ((Ship) victim).isPlayer()) {
                 victim.attack(damage);
