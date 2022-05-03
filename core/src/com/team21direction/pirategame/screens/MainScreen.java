@@ -49,7 +49,7 @@ public class MainScreen implements Screen {
 
     private final Weather[] weathers;
     private final College[] colleges;
-    private final Powerup[] powerups;
+    private final ArrayList<Powerup> powerups;
     public final ArrayList<Ship> ships;
 
     public final Ship player;
@@ -139,14 +139,15 @@ public class MainScreen implements Screen {
             weatherStage.addActor(weathers[i]);
         }
 
-        powerups = new Powerup[15];
+        powerups = new ArrayList<>();
         for(int i = 0; i < 15; i++) {
-            powerups[i] = new Powerup(this);
+            Powerup tempPowerup = new Powerup(this);
+            powerups.add(tempPowerup);
             boolean success;
             do {
-                success = powerups[i].move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
+                success = tempPowerup.move((float)(Math.random() * PirateGame.WORLD_WIDTH) - PirateGame.WORLD_WIDTH / 2.0f, (float)(Math.random() * PirateGame.WORLD_HEIGHT) - PirateGame.WORLD_WIDTH / 2.0f);
             } while (!success);
-            stage.addActor(powerups[i]);
+            stage.addActor(tempPowerup);
         }
 
 
@@ -218,6 +219,18 @@ public class MainScreen implements Screen {
         }
     }
 
+    public ArrayList<Powerup> getPowerups() { return powerups; }
+
+    public void setPowerups(Properties config) {
+        int count = 0;
+        for (Powerup powerup : powerups) {
+            powerup.setPosition(Float.parseFloat(config.get("powerX" + count).toString()),
+                    Float.parseFloat(config.get("powerY" + count).toString()));
+            powerup.setType(Powerup.Type.valueOf(config.get("powerT" + count).toString()));
+            count++;
+        }
+    }
+
     public void saveGame(MainScreen savedScreen, String fileName) {
         try (OutputStream output = new FileOutputStream(fileName)) {
             Properties config = new Properties();
@@ -253,6 +266,15 @@ public class MainScreen implements Screen {
                 config.put("shipY" + shipIndex, Float.toString(ship.getY()));
                 config.put("shipH" + shipIndex, Float.toString(ship.getHealth()));
                 shipIndex++;
+            }
+
+            //Saves position and type of each powerup
+            int powerIndex = 0;
+            for (Powerup powerup : savedScreen.getPowerups()) {
+                config.put("powerX" + powerIndex, Float.toString(powerup.getX()));
+                config.put("powerY" + powerIndex, Float.toString(powerup.getY()));
+                config.put("powerT" + powerIndex, powerup.getType().toString());
+                powerIndex++;
             }
 
             config.store(output, null);

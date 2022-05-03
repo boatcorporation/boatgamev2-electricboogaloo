@@ -144,6 +144,7 @@ public class TitleScreen implements Screen {
             loadedGame.setWeather(config);
             loadedGame.setColleges(config);
             loadedGame.setShips(config);
+            loadedGame.setPowerups(config);
             this.game.mainScreen = loadedGame;
             this.game.setScreen(this.game.mainScreen);
             } catch (IOException ignored) {}
