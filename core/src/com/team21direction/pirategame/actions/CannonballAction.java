@@ -36,7 +36,7 @@ public class CannonballAction extends Action {
         float deltaX = (int)(cannonball.direction.x * 5);
         float deltaY = (int)(cannonball.direction.y * 5);
         int damage = cannonball.getDamage();
-        GameActor victim = cannonball.screen.getCollision(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
+        GameActor victim = cannonball.screen.getGameActorCollision(cannonball.getX() + deltaX, cannonball.getY() + deltaY);
         String victimCollege = "";
         if (victim instanceof Ship) {
             victimCollege = ((Ship) victim).getParentCollegeName();
@@ -44,7 +44,7 @@ public class CannonballAction extends Action {
             victimCollege = ((College) victim).getCollegeName();
         }
         // ... remove the College check for Ship collisions...
-        if (victim != null && victim != this.attacker && !(victim instanceof Weather) && !(victim instanceof Powerup)) {
+        if (victim != null && victim != this.attacker) {
             if (this.attacker instanceof Ship && ((Ship) this.attacker).isPlayer() && !(Objects.equals(this.collegeName, victimCollege))) {
                  if (victim instanceof Ship) {
                      victim.attack(100);

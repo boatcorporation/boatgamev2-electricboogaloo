@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.team21direction.pirategame.actors.GameActor;
+import com.team21direction.pirategame.actors.InteractableActor;
 import com.team21direction.pirategame.screens.MainScreen;
 
 import java.util.List;
 import java.util.Random;
 
-public class Powerup extends GameActor {
+public class Powerup extends InteractableActor {
 
     public enum Type {Speed, Health, Invisible, Experience, Gold}
     public Type type;
