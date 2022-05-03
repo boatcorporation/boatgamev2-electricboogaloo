@@ -246,6 +246,15 @@ MainScreen implements Screen {
         }
     }
 
+    public Obstacle[] getObstacles() {return obstacles;}
+
+    public void setObstacles(Properties config) {
+        for (int i = 0; i < obstacles.length; i++) {
+            obstacles[i].setPosition(Float.parseFloat(config.get("obstacleX" + i).toString()),
+                    Float.parseFloat(config.get("obstacleY" + i).toString()));
+        }
+    }
+
     public void saveGame(MainScreen savedScreen, String fileName) {
         try (OutputStream output = new FileOutputStream(fileName)) {
             Properties config = new Properties();
@@ -290,6 +299,14 @@ MainScreen implements Screen {
                 config.put("powerY" + powerIndex, Float.toString(powerup.getY()));
                 config.put("powerT" + powerIndex, powerup.getType().toString());
                 powerIndex++;
+            }
+
+            // Saves the position of each obstacle
+            int obstIndex = 0;
+            for (Obstacle obstacle : savedScreen.getObstacles()) {
+                config.put("obstacleX" + obstIndex, Float.toString(obstacle.getX()));
+                config.put("obstacleY" + obstIndex, Float.toString(obstacle.getY()));
+                obstIndex++;
             }
 
             config.store(output, null);
